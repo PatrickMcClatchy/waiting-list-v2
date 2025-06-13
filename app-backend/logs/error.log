@@ -1,6 +1,5 @@
-[13-Jun-2025 12:28:59 UTC] PHP Warning:  SQLite3::query(): Unable to prepare statement: database disk image is malformed in /Users/paddy/Downloads/waitinglistv3current2-7/app-backend/api/export_backup.php on line 48
-[13-Jun-2025 12:28:59 UTC] PHP Fatal error:  Uncaught Error: Call to a member function fetchArray() on false in /Users/paddy/Downloads/waitinglistv3current2-7/app-backend/api/export_backup.php:51
+[13-Jun-2025 13:16:20 UTC] PHP Fatal error:  Uncaught Error: Call to undefined method TCPDF::setFooterCallback() in /Users/paddy/Downloads/waitinglistv3current2-9/app-backend/api/export_waiting_list.php:131
 Stack trace:
-#0 /Users/paddy/Downloads/waitinglistv3current2-7/webroot/admin/api_proxy.php(77): include()
+#0 /Users/paddy/Downloads/waitinglistv3current2-9/webroot/admin/api_proxy.php(77): include()
 #1 {main}
-  thrown in /Users/paddy/Downloads/waitinglistv3current2-7/app-backend/api/export_backup.php on line 51
+  thrown in /Users/paddy/Downloads/waitinglistv3current2-9/app-backend/api/export_waiting_list.php on line 131
