@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting...</title>
-    <script>
-        // Redirect to the public folder
-        window.location.href = '/public/';
-    </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redirecting...</title>
+
+  <!-- Meta refresh as fallback -->
+  <meta http-equiv="refresh" content="0;URL=public/">
+
+  <!-- JavaScript redirect -->
+  <script>
+    window.location.href = "public/";
+  </script>
 </head>
 <body>
-    <p>Redirecting to <a href="/public/">public interface</a>...</p>
+  <p>Redirecting to <a href="public/">public interface</a>...</p>
 </body>
 </html>
