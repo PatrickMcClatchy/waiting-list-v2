@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAGA Waiting List</title>
+    <link rel="stylesheet" href="/public/css/main.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Join the SAGA Waiting List</h1>
+            <p>Fill out the form below to enter the waiting list</p>
+        </header>
+        
+        <main>
+            <div class="card" id="signup-section">
+                <div id="waitingListClosedMessage" style="display: none;">
+                    <div class="alert alert-warning">
+                        <p id="closedMessageText">The waiting list is currently closed.</p>
+                    </div>
+                </div>
+                
+                <form id="signupForm" style="display: none;">
+                    <div class="form-group">
+                        <label for="name" class="form-label">Full Name</label>
+                        <input type="text" id="name" name="name" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email" class="form-label">Phone or Email</label>
+                        <input type="text" id="email" name="email" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="language" class="form-label">Language</label>
+                        <input type="text" id="language" name="language" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="comment" class="form-label">Additional Comments (Optional)</label>
+                        <textarea id="comment" name="comment" class="form-control"></textarea>
+                    </div>
+                    
+                    <div class="g-recaptcha" 
+                         data-sitekey="6LeK9oIqAAAAAJQR2aXqxZiY-TDG4BQglyC1qTNq" 
+                         data-callback="enableSubmit">
+                    </div>
+                    
+                    <div class="form-group" style="text-align: center;">
+                        <button id="submitButton" type="submit" class="btn" disabled>Join Waiting List</button>
+                    </div>
+                </form>
+                
+                <div id="signupResponse" class="mt-3"></div>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p>&copy; 2025 SAGA</p>
+        </footer>
+    </div>
+
+    <script>
+        function enableSubmit() {
+            document.getElementById('submitButton').disabled = false;
+        }
+
+        function checkWaitingListState() {
+            $.get('/public/api_proxy.php?endpoint=get_waiting_list_state.php', function(response) {
+                console.log('get_waiting_list_state response:', response);
+
+                if (response.success) {
+                    if (response.isOpen === 1) {
+                        $('#signupForm').show();
+                        $('#waitingListClosedMessage').hide();
+                        $('#signupForm input, #signupForm select, #signupForm textarea').prop('disabled', false);
+                        $('#submitButton').prop('disabled', true);
+                    } else {
+                        $.get('/public/api_proxy.php?endpoint=get_closed_message.php', function(messageResponse) {
+                            console.log('get_closed_message response:', messageResponse);
+                            const closedMessage = messageResponse.success ? messageResponse.message : 'The waiting list is currently closed.';
+                            $('#signupForm').hide();
+                            $('#waitingListClosedMessage').show();
+                            $('#closedMessageText').text(closedMessage);
+                        }, 'json').fail(function(jqXHR, textStatus, errorThrown) {
+                            console.error('Error fetching closed message:', textStatus, errorThrown);
+                            $('#closedMessageText').text('The waiting list is currently closed.');
+                        });
+                    }
+                } else {
+                    showAlert('Unable to check waiting list state. Please try again later.', 'danger');
+                }
+            }, 'json').fail(function(jqXHR, textStatus, errorThrown) {
+                console.error('Error checking waiting list state:', textStatus, errorThrown);
+                showAlert('An error occurred. Please try again later.', 'danger');
+            });
+        }
+
+        function showAlert(message, type) {
+            const alertClass = type === 'danger' ? 'alert-danger' : 'alert-success';
+            $('#signupResponse').html(`<div class="alert ${alertClass}">${message}</div>`);
+        }
+
+        $(document).ready(function() {
+            checkWaitingListState();
+
+            $('#signupForm').submit(function(event) {
+                event.preventDefault();
+                
+                const submitBtn = $('#submitButton');
+                submitBtn.prop('disabled', true).text('Processing...');
+                
+                $.post('/public/api_proxy.php?endpoint=add_user.php', $(this).serialize(), function(response) {
+                    if (response.success) {
+                        $('#signup-section').html(`
+    <div class="text-center">
+        <div class="checkmark-circle">
+            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle cx="26" cy="26" r="25" fill="none" stroke="white" stroke-width="2"/>
+                <path fill="none" stroke="white" stroke-width="4" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+        </div>
+        <h2>${response.message}</h2>
+        <p>Click the link below to download important information for your visit:</p>
+        <a href="/public/confirmation.pdf" target="_blank" class="btn mt-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px; vertical-align: text-bottom;">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            SAGA Visit Information
+        </a>
+    </div>
+`);
+                    } else {
+                        showAlert(response.message || 'An error occurred. Please try again.', 'danger');
+                        submitBtn.prop('disabled', false).text('Join Waiting List');
+                    }
+                }, 'json').fail(function() {
+                    showAlert('An error occurred. Please try again.', 'danger');
+                    submitBtn.prop('disabled', false).text('Join Waiting List');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

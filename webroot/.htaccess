@@ -1,0 +1,13 @@
+# Enable PHP execution
+<FilesMatch "\.php$">
+    SetHandler application/x-httpd-php
+</FilesMatch>
+
+# Protect sensitive files
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Redirect index to public folder
+DirectoryIndex index.html index.php

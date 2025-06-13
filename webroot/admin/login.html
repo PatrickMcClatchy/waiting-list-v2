@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - SAGA Waiting List</title>
+    <link rel="stylesheet" href="/admin/css/admin.css">
+</head>
+<body style="margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh;">
+    <div class="container d-flex align-items-center justify-content-center" style="max-width: 100%; flex-direction: column;">
+        <div class="card" style="max-width: 400px; width: 100%;">
+            <div class="text-center mb-4">
+                <h1>Admin Login</h1>
+                <p>Enter your password to access the admin dashboard</p>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" name="password" class="form-control" required>
+                </div>
+                
+                <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
+                
+                <button type="submit" class="btn" style="width: 100%;">Login</button>
+            </form>
+        </div>
+    </div>
+</body>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('loginForm');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            loginForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                const password = document.getElementById('password').value;
+                const submitBtn = this.querySelector('button[type="submit"]');
+                
+                // Disable button and show loading state
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Logging in...';
+                errorMessage.style.display = 'none';
+                
+                fetch('/admin/api_proxy.php?endpoint=login.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `password=${encodeURIComponent(password)}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = '/admin/index.html';
+                    } else {
+                        errorMessage.textContent = data.message || 'Invalid password';
+                        errorMessage.style.display = 'block';
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Login';
+                    }
+                })
+                .catch(error => {
+                    console.error('Login error:', error);
+                    errorMessage.textContent = 'An error occurred. Please try again.';
+                    errorMessage.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Login';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

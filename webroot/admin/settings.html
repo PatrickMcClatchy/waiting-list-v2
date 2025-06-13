@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Settings - SAGA Waiting List</title>
+    <link rel="stylesheet" href="/admin/css/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <div class="container">
+                <div class="admin-header-content">
+                    <h1 class="admin-title">SAGA Waiting List Admin</h1>
+                    <button id="logoutBtn" class="btn btn-danger btn-sm">Logout</button>
+                </div>
+            </div>
+        </header>
+        
+        <div class="container">
+            <nav class="admin-nav">
+                <ul class="admin-nav-list">
+                    <li class="admin-nav-item">
+                        <a href="/admin/index.html" class="admin-nav-link">Dashboard</a>
+                    </li>
+                    <li class="admin-nav-item">
+                        <a href="/admin/settings.html" class="admin-nav-link active">Settings</a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <main class="admin-main">
+                <!-- Scheduled Open Times -->
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h2 class="admin-card-title">Scheduled List Opening Times</h2>
+                    </div>
+                    
+                    <form id="scheduledOpenTimesForm">
+                        <div class="form-group">
+                            <label for="scheduledOpenTimes" class="form-label">
+                                Scheduled Open Times (e.g., Monday 09:00,Thursday 14:00)
+                            </label>
+                            <input type="text" id="scheduledOpenTimes" name="scheduledOpenTimes" class="form-control" required>
+                            <small class="form-text text-muted">
+                                Enter days and times when the list should automatically open, separated by commas.
+                            </small>
+                        </div>
+                        
+                        <button type="submit" class="btn">Update Schedule</button>
+                    </form>
+                </div>
+                
+                <!-- Closed Message -->
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h2 class="admin-card-title">Closed List Message</h2>
+                    </div>
+                    
+                    <form id="closedMessageForm">
+                        <div class="form-group">
+                            <label for="closedMessage" class="form-label">
+                                Message to display when the waiting list is closed
+                            </label>
+                            <textarea id="closedMessage" name="message" class="form-control" rows="4" required></textarea>
+                            <small class="form-text text-muted">
+                                This message will be shown to users when they visit the site while the list is closed.
+                            </small>
+                        </div>
+                        
+                        <button type="submit" class="btn">Update Message</button>
+                    </form>
+                </div>
+
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h2 class="admin-card-title">Success Message</h2>
+                    </div>
+                    
+                    <form id="successMessageForm">
+                        <div class="form-group">
+                            <label for="successMessage" class="form-label">
+                                Message to display when a user successfully joins the waiting list
+                            </label>
+                            <textarea id="successMessage" name="message" class="form-control" rows="4" required></textarea>
+                            <small class="form-text text-muted">
+                                This message will be shown to users after they successfully join the waiting list.
+                                Use {{position}} to include the user's position number in the message.
+                            </small>
+                        </div>
+                        
+                        <button type="submit" class="btn">Update Message</button>
+                    </form>
+                </div>
+                
+                <!-- Upload Confirmation PDF -->
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h2 class="admin-card-title">Confirmation PDF</h2>
+                    </div>
+                    
+                    <form id="uploadPdfForm" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="pdfFile" class="form-label">Upload new confirmation PDF</label>
+                            <input type="file" id="pdfFile" name="pdf" class="form-control" accept="application/pdf" required>
+                            <small class="form-text text-muted">
+                                This PDF will be provided to users after they successfully join the waiting list.
+                            </small>
+                        </div>
+                        
+                        <div class="d-flex" style="gap: 10px;">
+                            <button type="submit" class="btn">Upload PDF</button>
+                            <a href="/public/confirmation.pdf" target="_blank" class="btn">View Current PDF</a>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Instructions -->
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h2 class="admin-card-title">Instructions</h2>
+                    </div>
+                    
+                    <ul style="padding-left: 20px;">
+                        <li class="mb-2">
+                            <strong>Scheduled List Opening Times:</strong> Set specific days and times when the waiting list will automatically open for new entries. Format: <code>Day HH:MM</code> (e.g., <code>Monday 09:00,Thursday 14:00</code>).
+                        </li>
+                        <li class="mb-2">
+                            <strong>Closed List Message:</strong> Customize the message that users see when the waiting list is closed.
+                        </li>
+                        <li class="mb-2">
+                            <strong>Confirmation PDF:</strong> Upload a PDF document that users will receive as confirmation when they join the waiting list.
+                        </li>
+                    </ul>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <script>
+        // Check login status
+        function checkLoginStatus() {
+            fetch('/admin/api_proxy.php?endpoint=check_session.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.loggedIn) {
+                        window.location.href = '/admin/login.html';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking login status:', error);
+                    alert('An error occurred. Please try again.');
+                    window.location.href = '/admin/login.html';
+                });
+        }
+        
+        // Show popup message
+        function showPopupMessage(message, type = 'success') {
+            const popup = document.createElement('div');
+            popup.className = `popup-message ${type === 'error' ? 'error' : ''}`;
+            popup.innerText = message;
+            
+            document.body.appendChild(popup);
+            
+            setTimeout(() => {
+                popup.classList.add('show');
+            }, 10);
+            
+            setTimeout(() => {
+                popup.classList.remove('show');
+                setTimeout(() => {
+                    popup.remove();
+                }, 300);
+            }, 3000);
+        }
+        
+        // Load scheduled open times
+        function loadScheduledOpenTimes() {
+            fetch('/admin/api_proxy.php?endpoint=get_scheduled_open_times.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('scheduledOpenTimes').value = data.scheduled_open_times;
+                    } else {
+                        showPopupMessage('Failed to load scheduled open times', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading scheduled open times:', error);
+                    showPopupMessage('Error loading scheduled open times', 'error');
+                });
+        }
+        
+        // Update scheduled open times
+        function updateScheduledOpenTimes(event) {
+            event.preventDefault();
+            
+            const scheduledOpenTimes = document.getElementById('scheduledOpenTimes').value;
+            const submitBtn = event.submitter;
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Updating...';
+            
+            fetch('/admin/api_proxy.php?endpoint=update_scheduled_open_times.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `scheduled_open_times=${encodeURIComponent(scheduledOpenTimes)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showPopupMessage('Scheduled open times updated successfully');
+                } else {
+                    showPopupMessage('Failed to update scheduled open times', 'error');
+                }
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Update Schedule';
+            })
+            .catch(error => {
+                console.error('Error updating scheduled open times:', error);
+                showPopupMessage('Error updating scheduled open times', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Update Schedule';
+            });
+        }
+        
+        // Load closed message
+        function loadClosedMessage() {
+            fetch('/admin/api_proxy.php?endpoint=get_closed_message.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('closedMessage').value = data.message;
+                    } else {
+                        showPopupMessage('Failed to load closed message', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading closed message:', error);
+                    showPopupMessage('Error loading closed message', 'error');
+                });
+        }
+        
+        // Update closed message
+        function updateClosedMessage(event) {
+            event.preventDefault();
+            
+            const message = document.getElementById('closedMessage').value;
+            const submitBtn = event.submitter;
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Updating...';
+            
+            fetch('/admin/api_proxy.php?endpoint=update_closed_message.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `message=${encodeURIComponent(message)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showPopupMessage('Closed message updated successfully');
+                } else {
+                    showPopupMessage('Failed to update closed message', 'error');
+                }
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Update Message';
+            })
+            .catch(error => {
+                console.error('Error updating closed message:', error);
+                showPopupMessage('Error updating closed message', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Update Message';
+            });
+        }
+
+        function loadSuccessMessage() {
+            fetch('/admin/api_proxy.php?endpoint=get_success_message.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('successMessage').value = data.message;
+                    } else {
+                        showPopupMessage('Failed to load success message', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading success message:', error);
+                    showPopupMessage('Error loading success message', 'error');
+                });
+        }
+        
+        // Update success message
+        function updateSuccessMessage(event) {
+            event.preventDefault();
+            
+            const message = document.getElementById('successMessage').value;
+            const submitBtn = event.submitter;
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Updating...';
+            
+            fetch('/admin/api_proxy.php?endpoint=update_success_message.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `message=${encodeURIComponent(message)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showPopupMessage('Success message updated successfully');
+                } else {
+                    showPopupMessage('Failed to update success message', 'error');
+                }
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Update Message';
+            })
+            .catch(error => {
+                console.error('Error updating success message:', error);
+                showPopupMessage('Error updating success message', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Update Message';
+            });
+        }
+        
+        // Upload PDF
+        function uploadPdf(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(document.getElementById('uploadPdfForm'));
+            const submitBtn = event.submitter;
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Uploading...';
+            
+            fetch('/admin/api_proxy.php?endpoint=upload_pdf.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('uploadPdfForm').reset();
+                    showPopupMessage('PDF uploaded successfully');
+                } else {
+                    showPopupMessage('Failed to upload PDF: ' + (data.message || 'Unknown error'), 'error');
+                }
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Upload PDF';
+            })
+            .catch(error => {
+                console.error('Error uploading PDF:', error);
+                showPopupMessage('Error uploading PDF', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Upload PDF';
+            });
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            checkLoginStatus();
+            loadScheduledOpenTimes();
+            loadClosedMessage();
+            loadSuccessMessage();
+            
+            // Event listeners
+            document.getElementById('scheduledOpenTimesForm').addEventListener('submit', updateScheduledOpenTimes);
+            document.getElementById('closedMessageForm').addEventListener('submit', updateClosedMessage);
+            document.getElementById('successMessageForm').addEventListener('submit', updateSuccessMessage);
+            document.getElementById('uploadPdfForm').addEventListener('submit', uploadPdf);
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                window.location.href = '/admin/api_proxy.php?endpoint=logout.php';
+            });
+        });
+    </script>
+</body>
+</html>

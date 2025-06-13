@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SAGA Waiting List</title>
+    <link rel="stylesheet" href="/admin/css/admin.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <div class="container">
+                <div class="admin-header-content">
+                    <h1 class="admin-title">SAGA Waiting List Admin</h1>
+                    <button id="logoutBtn" class="btn btn-danger btn-sm">Logout</button>
+                </div>
+            </div>
+        </header>
+        
+        <div class="container">
+            <nav class="admin-nav">
+                <ul class="admin-nav-list">
+                    <li class="admin-nav-item">
+                        <a href="/admin/index.html" class="admin-nav-link active">Dashboard</a>
+                    </li>
+                    <li class="admin-nav-item">
+                        <a href="/admin/settings.html" class="admin-nav-link">Settings</a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <main class="admin-main">
+                <!-- Waiting List Status Toggle -->
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h2 class="admin-card-title">Waiting List Status</h2>
+                    </div>
+                    
+                    <div class="switch-container">
+                        <label class="switch">
+                            <input type="checkbox" id="waitingListToggle">
+                            <span class="slider"></span>
+                        </label>
+                        <span id="waitingListStatus" class="switch-status">Loading status...</span>
+                    </div>
+                    
+                    <div class="d-flex" style="gap: 10px;">
+                        <button id="exportBtn" class="btn">Export Waiting List</button>
+                        <button id="refreshBtn" class="btn">Refresh Data</button>
+                    </div>
+                </div>
+                
+                <!-- Add New User -->
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h2 class="admin-card-title">Add New User</h2>
+                    </div>
+                    
+                    <form id="addUserForm">
+                        <div class="d-flex" style="gap: 15px; flex-wrap: wrap;">
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label for="name" class="form-label">Name</label>
+                                <input type="text" id="name" name="name" class="form-control" required>
+                            </div>
+                            
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label for="email" class="form-label">Email or Phone</label>
+                                <input type="text" id="email" name="email" class="form-control">
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex" style="gap: 15px; flex-wrap: wrap;">
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label for="language" class="form-label">Language</label>
+                                <input type="text" id="language" name="language" class="form-control" required>
+                            </div>
+                            
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label for="comment" class="form-label">Comment (Optional)</label>
+                                <input type="text" id="comment" name="comment" class="form-control">
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">Add User</button>
+                    </form>
+                </div>
+                
+                <!-- Backup Info -->
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h2 class="admin-card-title">Last Backup</h2>
+                        <a href="javascript:void(0)" onclick="viewLastBackup()" class="btn btn-sm">View Last Backup</a>
+                    </div>
+                    
+                    <p>Last backup date: <strong id="backupDate">Loading...</strong></p>
+                </div>
+                
+                <!-- Clear Waiting List -->
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h2 class="admin-card-title">Clear Waiting List</h2>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <strong>Warning:</strong> This action will remove all users from the waiting list. Make sure you have exported the current list before proceeding.
+                    </div>
+                    
+                    <div class="d-flex" style="gap: 10px;">
+                        <button id="clearListBtn" class="btn btn-danger">Clear Waiting List</button>
+                    </div>
+                </div>
+                
+                <!-- Waiting List Table -->
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h2 class="admin-card-title">Current Waiting List</h2>
+                    </div>
+                    
+                    <div style="overflow-x: auto;">
+                        <table id="waitingListTable" class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Position</th>
+                                    <th>Name</th>
+                                    <th>Contact</th>
+                                    <th>Language</th>
+                                    <th>Comment</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="6" class="text-center">Loading waiting list...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirm Action</h3>
+            </div>
+            <div class="modal-body">
+                <p id="confirmationMessage">Are you sure you want to remove this user?</p>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelBtn" class="btn">Cancel</button>
+                <button id="confirmBtn" class="btn btn-danger">Confirm</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Clear List Confirmation Modal -->
+    <div id="clearListModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Clear Waiting List</h3>
+            </div>
+            <div class="modal-body">
+                <p><strong>Warning:</strong> This will permanently remove all users from the waiting list.</p>
+                <p>A backup will be created automatically, but it's recommended to export the list first.</p>
+                
+                <div class="form-group" style="margin-top: 1rem;">
+                    <div style="display: flex; align-items: center;">
+                        <input type="checkbox" id="exportConfirmCheckbox" style="margin-right: 10px;">
+                        <label for="exportConfirmCheckbox">I confirm that I have exported the current waiting list</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelClearBtn" class="btn">Cancel</button>
+                <button id="confirmClearBtn" class="btn btn-danger" disabled>Clear List</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Check login status
+        function checkLoginStatus() {
+            fetch('/admin/api_proxy.php?endpoint=check_session.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.loggedIn) {
+                        window.location.href = '/admin/login.html';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking login status:', error);
+                    alert('An error occurred. Please try again.');
+                    window.location.href = '/admin/login.html';
+                });
+        }
+        
+        // Show popup message
+        function showPopupMessage(message, type = 'success') {
+            const popup = document.createElement('div');
+            popup.className = `popup-message ${type === 'error' ? 'error' : ''}`;
+            popup.innerText = message;
+            
+            document.body.appendChild(popup);
+            
+            setTimeout(() => {
+                popup.classList.add('show');
+            }, 10);
+            
+            setTimeout(() => {
+                popup.classList.remove('show');
+                setTimeout(() => {
+                    popup.remove();
+                }, 300);
+            }, 3000);
+        }
+        
+        // Load waiting list
+        function loadWaitingList() {
+            fetch('/admin/api_proxy.php?endpoint=get_waiting_list.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayWaitingList(data.data);
+                    } else {
+                        console.error("Failed to load the waiting list.");
+                        showPopupMessage('Failed to load waiting list', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading waiting list:', error);
+                    showPopupMessage('Error loading waiting list', 'error');
+                });
+        }
+        
+        // Display waiting list
+        function displayWaitingList(users) {
+            const tableBody = document.querySelector('#waitingListTable tbody');
+            
+            if (users.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6" class="text-center">No users in the waiting list</td></tr>`;
+                return;
+            }
+            
+            tableBody.innerHTML = '';
+            
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.position}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email_or_phone || '-'}</td>
+                    <td>${user.language || '-'}</td>
+                    <td>${user.comment || '-'}</td>
+                    <td>
+                        <div class="admin-table-actions">
+                            <button class="btn btn-sm btn-danger" onclick="removeUser(${user.id})">Remove</button>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // Load toggle state
+        function loadToggleState() {
+            fetch('/admin/api_proxy.php?endpoint=get_waiting_list_state.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const isOpen = data.isOpen === 1;
+                        document.getElementById('waitingListToggle').checked = isOpen;
+                        updateSwitchStatus(isOpen);
+                    } else {
+                        showPopupMessage('Failed to fetch waiting list state', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching waiting list state:', error);
+                    showPopupMessage('Error fetching waiting list state', 'error');
+                });
+        }
+        
+        // Update switch status
+        function updateSwitchStatus(isOpen) {
+            const statusElement = document.getElementById('waitingListStatus');
+            
+            if (isOpen) {
+                statusElement.textContent = 'Waiting list is OPEN';
+                statusElement.className = 'switch-status open';
+            } else {
+                statusElement.textContent = 'Waiting list is CLOSED';
+                statusElement.className = 'switch-status closed';
+            }
+        }
+        
+        // Update toggle state
+        function updateToggleState() {
+            const isOpen = document.getElementById('waitingListToggle').checked ? 1 : 0;
+            
+            fetch('/admin/api_proxy.php?endpoint=toggle_waiting_list.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `isOpen=${isOpen}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateSwitchStatus(isOpen);
+                    showPopupMessage(`Waiting list is now ${isOpen ? 'open' : 'closed'}`);
+                } else {
+                    showPopupMessage('Failed to update waiting list state', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating waiting list state:', error);
+                showPopupMessage('Error updating waiting list state', 'error');
+            });
+        }
+        
+        // Add user
+        function addUser(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(document.getElementById('addUserForm'));
+            const submitBtn = event.submitter;
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Adding...';
+            
+            fetch('/admin/api_proxy.php?endpoint=add_user_admin.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('addUserForm').reset();
+                    loadWaitingList();
+                    showPopupMessage('User added successfully');
+                } else {
+                    showPopupMessage(data.message || 'Failed to add user', 'error');
+                }
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Add User';
+            })
+            .catch(error => {
+                console.error('Error adding user:', error);
+                showPopupMessage('Error adding user', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Add User';
+            });
+        }
+        
+        // Remove user
+        function removeUser(userId) {
+            const modal = document.getElementById('confirmationModal');
+            const confirmBtn = document.getElementById('confirmBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+            
+            // Show modal
+            modal.classList.add('active');
+            
+            // Set up confirm button
+            confirmBtn.onclick = function() {
+                modal.classList.remove('active');
+                
+                fetch('/admin/api_proxy.php?endpoint=remove_user.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `id=${userId}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadWaitingList();
+                        showPopupMessage('User removed successfully');
+                    } else {
+                        showPopupMessage('Failed to remove user', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error removing user:', error);
+                    showPopupMessage('Error removing user', 'error');
+                });
+            };
+            
+            // Set up cancel button
+            cancelBtn.onclick = function() {
+                modal.classList.remove('active');
+            };
+            
+            // Close modal when clicking outside
+            modal.onclick = function(event) {
+                if (event.target === modal) {
+                    modal.classList.remove('active');
+                }
+            };
+        }
+        
+        // Load backup info
+        function loadBackupInfo() {
+            fetch('/admin/api_proxy.php?endpoint=get_backup_info.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('backupDate').textContent = data.backup_date;
+                    } else {
+                        document.getElementById('backupDate').textContent = 'No backup found';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching backup info:', error);
+                    document.getElementById('backupDate').textContent = 'Error loading backup info';
+                });
+        }
+        
+        // Export waiting list
+        function exportWaitingList() {
+            // Open the export in a new window
+            window.open('/admin/api_proxy.php?endpoint=export_waiting_list.php', '_blank');
+        }
+        
+        // View last backup
+        function viewLastBackup() {
+            fetch('/admin/api_proxy.php?endpoint=get_backup_list.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.backups && data.backups.length > 0) {
+                        const latestBackup = data.backups[0];
+                        window.open(`/admin/api_proxy.php?endpoint=export_backup.php&file=${latestBackup.file}`, '_blank');
+                    } else {
+                        showPopupMessage('No backup available', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching backup list:', error);
+                    showPopupMessage('Error fetching backup list', 'error');
+                });
+        }
+        
+        // Clear waiting list
+        function clearWaitingList() {
+            const modal = document.getElementById('clearListModal');
+            const confirmBtn = document.getElementById('confirmClearBtn');
+            const cancelBtn = document.getElementById('cancelClearBtn');
+            const checkbox = document.getElementById('exportConfirmCheckbox');
+            
+            // Reset checkbox state
+            checkbox.checked = false;
+            confirmBtn.disabled = true;
+            
+            // Show modal
+            modal.classList.add('active');
+            
+            // Enable/disable confirm button based on checkbox
+            checkbox.onchange = function() {
+                confirmBtn.disabled = !this.checked;
+            };
+            
+            // Set up confirm button
+            confirmBtn.onclick = function() {
+                modal.classList.remove('active');
+                
+                // Show loading state
+                showPopupMessage('Processing...', 'warning');
+                
+                fetch('/admin/api_proxy.php?endpoint=clear_waiting_list.php', {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadWaitingList();
+                        loadBackupInfo();
+                        showPopupMessage('Waiting list cleared successfully');
+                    } else {
+                        showPopupMessage('Failed to clear waiting list: ' + data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error clearing waiting list:', error);
+                    showPopupMessage('Error clearing waiting list', 'error');
+                });
+            };
+            
+            // Set up cancel button
+            cancelBtn.onclick = function() {
+                modal.classList.remove('active');
+            };
+            
+            // Close modal when clicking outside
+            modal.onclick = function(event) {
+                if (event.target === modal) {
+                    modal.classList.remove('active');
+                }
+            };
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            checkLoginStatus();
+            loadWaitingList();
+            loadToggleState();
+            loadBackupInfo();
+            
+            // Check scheduled open times
+            fetch('/admin/api_proxy.php?endpoint=scheduled_open.php')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Scheduled open check completed:', data);
+                })
+                .catch(error => {
+                    console.error('Error checking scheduled open times:', error);
+                });
+            
+            // Event listeners
+            document.getElementById('waitingListToggle').addEventListener('change', updateToggleState);
+            document.getElementById('addUserForm').addEventListener('submit', addUser);
+            document.getElementById('refreshBtn').addEventListener('click', () => {
+                loadWaitingList();
+                loadToggleState();
+                loadBackupInfo();
+                showPopupMessage('Data refreshed');
+            });
+            document.getElementById('exportBtn').addEventListener('click', exportWaitingList);
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                window.location.href = '/admin/api_proxy.php?endpoint=logout.php';
+            });
+            document.getElementById('clearListBtn').addEventListener('click', clearWaitingList);
+        });
+    </script>
+</body>
+</html>
