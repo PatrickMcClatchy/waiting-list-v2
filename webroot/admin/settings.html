@@ -137,7 +137,30 @@
         </div>
     </div>
     
+    <!-- Include navigation script -->
+    <script src="/admin/js/navigation.js"></script>
+    
     <script>
+        // Settings-specific functionality
+        function initializeSettings() {
+            checkLoginStatus();
+            loadScheduledOpenTimes();
+            loadClosedMessage();
+            loadSuccessMessage();
+            
+            // Event listeners
+            document.getElementById('scheduledOpenTimesForm').addEventListener('submit', updateScheduledOpenTimes);
+            document.getElementById('closedMessageForm').addEventListener('submit', updateClosedMessage);
+            document.getElementById('successMessageForm').addEventListener('submit', updateSuccessMessage);
+            document.getElementById('uploadPdfForm').addEventListener('submit', uploadPdf);
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                window.location.href = '/admin/api_proxy.php?endpoint=logout.php';
+            });
+        }
+        
+        // Make initializeSettings globally available
+        window.initializeSettings = initializeSettings;
+        
         // Check login status
         function checkLoginStatus() {
             fetch('/admin/api_proxy.php?endpoint=check_session.php')
@@ -356,21 +379,9 @@
             });
         }
         
-        // Initialize
+        // Initialize on page load
         document.addEventListener('DOMContentLoaded', () => {
-            checkLoginStatus();
-            loadScheduledOpenTimes();
-            loadClosedMessage();
-            loadSuccessMessage();
-            
-            // Event listeners
-            document.getElementById('scheduledOpenTimesForm').addEventListener('submit', updateScheduledOpenTimes);
-            document.getElementById('closedMessageForm').addEventListener('submit', updateClosedMessage);
-            document.getElementById('successMessageForm').addEventListener('submit', updateSuccessMessage);
-            document.getElementById('uploadPdfForm').addEventListener('submit', uploadPdf);
-            document.getElementById('logoutBtn').addEventListener('click', () => {
-                window.location.href = '/admin/api_proxy.php?endpoint=logout.php';
-            });
+            initializeSettings();
         });
     </script>
 </body>

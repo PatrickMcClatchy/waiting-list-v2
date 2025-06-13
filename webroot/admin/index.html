@@ -181,7 +181,46 @@
         </div>
     </div>
     
+    <!-- Include navigation script -->
+    <script src="/admin/js/navigation.js"></script>
+    
     <script>
+        // Dashboard-specific functionality
+        function initializeDashboard() {
+            checkLoginStatus();
+            loadWaitingList();
+            loadToggleState();
+            loadBackupInfo();
+            
+            // Check scheduled open times
+            fetch('/admin/api_proxy.php?endpoint=scheduled_open.php')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Scheduled open check completed:', data);
+                })
+                .catch(error => {
+                    console.error('Error checking scheduled open times:', error);
+                });
+            
+            // Event listeners
+            document.getElementById('waitingListToggle').addEventListener('change', updateToggleState);
+            document.getElementById('addUserForm').addEventListener('submit', addUser);
+            document.getElementById('refreshBtn').addEventListener('click', () => {
+                loadWaitingList();
+                loadToggleState();
+                loadBackupInfo();
+                showPopupMessage('Data refreshed');
+            });
+            document.getElementById('exportBtn').addEventListener('click', exportWaitingList);
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                window.location.href = '/admin/api_proxy.php?endpoint=logout.php';
+            });
+            document.getElementById('clearListBtn').addEventListener('click', clearWaitingList);
+        }
+        
+        // Make initializeDashboard globally available
+        window.initializeDashboard = initializeDashboard;
+        
         // Check login status
         function checkLoginStatus() {
             fetch('/admin/api_proxy.php?endpoint=check_session.php')
@@ -500,37 +539,9 @@
             };
         }
         
-        // Initialize
+        // Initialize on page load
         document.addEventListener('DOMContentLoaded', () => {
-            checkLoginStatus();
-            loadWaitingList();
-            loadToggleState();
-            loadBackupInfo();
-            
-            // Check scheduled open times
-            fetch('/admin/api_proxy.php?endpoint=scheduled_open.php')
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Scheduled open check completed:', data);
-                })
-                .catch(error => {
-                    console.error('Error checking scheduled open times:', error);
-                });
-            
-            // Event listeners
-            document.getElementById('waitingListToggle').addEventListener('change', updateToggleState);
-            document.getElementById('addUserForm').addEventListener('submit', addUser);
-            document.getElementById('refreshBtn').addEventListener('click', () => {
-                loadWaitingList();
-                loadToggleState();
-                loadBackupInfo();
-                showPopupMessage('Data refreshed');
-            });
-            document.getElementById('exportBtn').addEventListener('click', exportWaitingList);
-            document.getElementById('logoutBtn').addEventListener('click', () => {
-                window.location.href = '/admin/api_proxy.php?endpoint=logout.php';
-            });
-            document.getElementById('clearListBtn').addEventListener('click', clearWaitingList);
+            initializeDashboard();
         });
     </script>
 </body>
