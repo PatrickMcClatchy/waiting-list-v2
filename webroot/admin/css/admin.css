@@ -207,11 +207,180 @@
   font-size: 1.25rem;
 }
 
+/* Enhanced Button Styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  background-color: var(--text-light);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Button variants with specific colors and icons */
+.btn-primary {
+  background-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+}
+
+.btn-success {
+  background-color: var(--success-color);
+}
+
+.btn-success:hover {
+  background-color: var(--success-dark);
+}
+
+.btn-danger {
+  background-color: var(--danger-color);
+}
+
+.btn-danger:hover {
+  background-color: var(--danger-dark);
+}
+
+.btn-warning {
+  background-color: var(--warning-color);
+  color: white;
+}
+
+.btn-warning:hover {
+  background-color: #e67e22;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  gap: 6px;
+}
+
+/* Button groups */
+.btn-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-group .btn {
+  flex: 1;
+  min-width: 140px;
+}
+
+/* Icon styles */
+.btn-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.btn-sm .btn-icon {
+  width: 14px;
+  height: 14px;
+}
+
+/* Specific button styles for different actions */
+.btn-export {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+
+.btn-export:hover {
+  background: linear-gradient(135deg, #27ae60, #229954);
+}
+
+.btn-refresh {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.btn-refresh:hover {
+  background: linear-gradient(135deg, #2980b9, #21618c);
+}
+
+.btn-clear {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.btn-clear:hover {
+  background: linear-gradient(135deg, #c0392b, #a93226);
+}
+
+.btn-add {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+
+.btn-add:hover {
+  background: linear-gradient(135deg, #27ae60, #229954);
+}
+
+.btn-view {
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+}
+
+.btn-view:hover {
+  background: linear-gradient(135deg, #8e44ad, #7d3c98);
+}
+
+.btn-upload {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+}
+
+.btn-upload:hover {
+  background: linear-gradient(135deg, #e67e22, #d35400);
+}
+
 /* Toggle switch */
 .switch-container {
   display: flex;
   align-items: center;
   margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: var(--bg-light);
+  border-radius: var(--radius);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.switch-container:hover {
+  border-color: var(--primary-color);
+  background-color: rgba(52, 152, 219, 0.05);
 }
 
 .switch {
@@ -261,7 +430,11 @@ input:checked + .slider:before {
 }
 
 .switch-status {
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .switch-status.open {
@@ -270,6 +443,30 @@ input:checked + .slider:before {
 
 .switch-status.closed {
   color: var(--danger-color);
+}
+
+.switch-status::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: currentColor;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* Admin table */
@@ -360,6 +557,16 @@ input:checked + .slider:before {
   gap: 0.5rem;
 }
 
+/* Form enhancements */
+.form-control {
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15);
+}
+
 /* Responsive admin */
 @media (max-width: 768px) {
   .admin-nav-list {
@@ -397,30 +604,14 @@ input:checked + .slider:before {
   .page-content.slide-in-active {
     transform: translateY(0);
   }
-}
 
-/* Smooth button transitions */
-.btn {
-  transition: all 0.2s ease;
-  transform: translateY(0);
-}
+  .btn-group {
+    flex-direction: column;
+  }
 
-.btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.btn:active {
-  transform: translateY(0);
-}
-
-/* Form animations */
-.form-control {
-  transition: all 0.3s ease;
-}
-
-.form-control:focus {
-  transform: translateY(-1px);
+  .btn-group .btn {
+    min-width: auto;
+  }
 }
 
 /* Staggered card animations */
@@ -429,3 +620,55 @@ input:checked + .slider:before {
 .admin-card:nth-child(3) { animation-delay: 0.3s; }
 .admin-card:nth-child(4) { animation-delay: 0.4s; }
 .admin-card:nth-child(5) { animation-delay: 0.5s; }
+
+/* Tooltip styles */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 200px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -100px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 0.875rem;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Status indicators */
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-indicator.open {
+  background-color: rgba(46, 204, 113, 0.2);
+  color: var(--success-dark);
+}
+
+.status-indicator.closed {
+  background-color: rgba(231, 76, 60, 0.2);
+  color: var(--danger-dark);
+}
