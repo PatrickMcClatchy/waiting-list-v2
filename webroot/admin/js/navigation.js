@@ -49,9 +49,13 @@ class AdminNavigation {
     
     setupNavIndicator() {
         const navList = document.querySelector('.admin-nav-list');
-        const indicator = document.createElement('div');
-        indicator.className = 'nav-indicator';
-        navList.appendChild(indicator);
+        let indicator = document.querySelector('.nav-indicator');
+        
+        if (!indicator) {
+            indicator = document.createElement('div');
+            indicator.className = 'nav-indicator';
+            navList.appendChild(indicator);
+        }
         
         this.updateNavIndicator();
     }
@@ -86,6 +90,14 @@ class AdminNavigation {
         });
         
         this.updateNavIndicator();
+        this.updatePageIndicator();
+    }
+    
+    updatePageIndicator() {
+        const pageIndicator = document.querySelector('.page-indicator');
+        if (pageIndicator) {
+            pageIndicator.textContent = this.currentPage === 'dashboard' ? 'Dashboard' : 'Settings';
+        }
     }
     
     async navigateToPage(targetPage, href) {
