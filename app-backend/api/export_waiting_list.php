@@ -2,8 +2,9 @@
 /**
  * Export Waiting List Handler
  * 
- * Creates a nicely formatted PDF export of the waiting list
- * with empty rows at the end for manual additions
+ * Creates two lists in the PDF:
+ * - Public List: Position and Name only, displayed as two columns per page.
+ * - Internal List: Full metadata with all variables as columns, including comments.
  */
 
 session_start();
@@ -20,31 +21,34 @@ require_once(__DIR__ . '/../lib/tcpdf/tcpdf.php');
 
 // Extend TCPDF to create custom header and footer
 class SAGAPDF extends TCPDF {
+    private $sectionType = 'Public';
+    private $sectionPageNumber = 1;
+    private $sectionTotalPages = 1;
+    
+    public function setSectionInfo($type, $pageNumber, $totalPages) {
+        $this->sectionType = $type;
+        $this->sectionPageNumber = $pageNumber;
+        $this->sectionTotalPages = $totalPages;
+    }
+    
+    public function incrementSectionPage() {
+        $this->sectionPageNumber++;
+    }
+    
     // Page footer
     public function Footer() {
-        // Position at 15 mm from bottom
         $this->SetY(-15);
-        // Set font
         $this->SetFont('helvetica', 'I', 8);
-        // Draw a line
         $this->Line(15, $this->GetY(), 195, $this->GetY());
-        // Add some padding
         $this->SetY($this->GetY() + 3);
-        // Page number
-        $this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C');
-        // Date on the right
+        $this->Cell(0, 10, $this->sectionType . ' List - Page ' . $this->sectionPageNumber . '/' . $this->sectionTotalPages, 0, false, 'C');
         $this->Cell(0, 10, 'Generated: ' . date('Y-m-d H:i'), 0, false, 'R');
     }
 }
 
 try {
-    // Include the database connection helper
     require_once(__DIR__ . '/db_connect.php');
-    
-    // Connect to the database
     $db = db_connect();
-    
-    // Query all users in the waiting list, ordered by position
     $results = $db->query('SELECT * FROM waiting_list ORDER BY position ASC');
     
     $waitingList = [];
@@ -52,249 +56,177 @@ try {
         $waitingList[] = $row;
     }
 
-    // Create new PDF document using our extended class
     $pdf = new SAGAPDF('P', 'mm', 'A4', true, 'UTF-8', false);
-
-    // Set document information
     $pdf->SetCreator('SAGA Waiting List System');
     $pdf->SetAuthor('SAGA Admin');
     $pdf->SetTitle('Waiting List Export');
     $pdf->SetSubject('Current Waiting List');
-    
-    // Remove default header
     $pdf->setPrintHeader(false);
-    // Enable footer
     $pdf->setPrintFooter(true);
-    
-    // Set default monospaced font
     $pdf->SetDefaultMonospacedFont('courier');
-    
-    // Set margins
     $pdf->SetMargins(15, 15, 15);
-    
-    // Set auto page breaks
     $pdf->SetAutoPageBreak(TRUE, 15);
-    
-    // Set image scale factor
     $pdf->setImageScale(1.25);
-    
-    // Add a page
-    $pdf->AddPage();
-    
-    // Define colors
-    $headerBgColor = [230, 230, 230]; // Light gray
-    $headerTextColor = [50, 50, 50]; // Dark gray
-    $borderColor = [200, 200, 200]; // Medium gray
-    $rowColor1 = [255, 255, 255]; // White
-    $rowColor2 = [245, 245, 245]; // Very light gray
-    $titleColor = [70, 70, 70]; // Dark gray for title
-    
-    // Set title with a nice box
-    $pdf->SetFillColor($headerBgColor[0], $headerBgColor[1], $headerBgColor[2]);
-    $pdf->SetDrawColor($borderColor[0], $borderColor[1], $borderColor[2]);
-    $pdf->RoundedRect(15, 15, 180, 20, 2, '1111', 'DF', [], $headerBgColor);
-    
-    // Title text
-    $pdf->SetFont('helvetica', 'B', 18);
-    $pdf->SetTextColor($titleColor[0], $titleColor[1], $titleColor[2]);
-    $pdf->SetXY(15, 15);
-    $pdf->Cell(180, 12, 'SAGA Waiting List', 0, 1, 'C');
-    
-    // Subtitle with date and count
-    $pdf->SetFont('helvetica', '', 10);
-    $pdf->SetXY(15, 27);
-    $pdf->Cell(180, 8, 'Export Date: ' . date('Y-m-d H:i') . ' | Total Entries: ' . count($waitingList), 0, 1, 'C');
-    
-    // Add some space
-    $pdf->Ln(10);
-    
-    // Define table dimensions
-    $posWidth = 15;
+
+    // Calculate Public List pages needed
+    $posWidth = 30;
     $nameWidth = 60;
-    $contactWidth = 40;
-    $langWidth = 25;
-    $timeWidth = 40;
+    $gapWidth = 5;
     $rowHeight = 8;
     
-    // Column headers with rounded corners and gradient
-    $pdf->SetFillColor($headerBgColor[0], $headerBgColor[1], $headerBgColor[2]);
-    $pdf->SetTextColor($headerTextColor[0], $headerTextColor[1], $headerTextColor[2]);
-    $pdf->SetDrawColor($borderColor[0], $borderColor[1], $borderColor[2]);
-    $pdf->SetFont('helvetica', 'B', 10);
-    
-    // Draw header cells
-    $pdf->RoundedRect(15, $pdf->GetY(), $posWidth, $rowHeight, 1, '1000', 'DF');
-    $pdf->RoundedRect(15 + $posWidth, $pdf->GetY(), $nameWidth, $rowHeight, 1, '0000', 'DF');
-    $pdf->RoundedRect(15 + $posWidth + $nameWidth, $pdf->GetY(), $contactWidth, $rowHeight, 1, '0000', 'DF');
-    $pdf->RoundedRect(15 + $posWidth + $nameWidth + $contactWidth, $pdf->GetY(), $langWidth, $rowHeight, 1, '0000', 'DF');
-    $pdf->RoundedRect(15 + $posWidth + $nameWidth + $contactWidth + $langWidth, $pdf->GetY(), $timeWidth, $rowHeight, 1, '0001', 'DF');
-    
-    // Header text
-    $currentY = $pdf->GetY();
-    $pdf->SetXY(15, $currentY);
-    $pdf->Cell($posWidth, $rowHeight, 'Pos', 0, 0, 'C');
-    $pdf->Cell($nameWidth, $rowHeight, 'Name', 0, 0, 'C');
-    $pdf->Cell($contactWidth, $rowHeight, 'Contact', 0, 0, 'C');
-    $pdf->Cell($langWidth, $rowHeight, 'Language', 0, 0, 'C');
-    $pdf->Cell($timeWidth, $rowHeight, 'Time', 0, 1, 'C');
-    
-    // Data rows
-    $pdf->SetFont('helvetica', '', 9);
-    $pdf->SetTextColor(0, 0, 0);
-    
-    $fill = false;
-    $startY = $pdf->GetY();
-    
-    foreach ($waitingList as $user) {
-        // Format time
-        $timeFormatted = date('Y-m-d H:i', $user['time']);
-        
-        // Ensure data fits in cells
-        $name = mb_strlen($user['name']) > 30 ? mb_substr($user['name'], 0, 27) . '...' : $user['name'];
-        $contact = !empty($user['email_or_phone']) ? (mb_strlen($user['email_or_phone']) > 20 ? mb_substr($user['email_or_phone'], 0, 17) . '...' : $user['email_or_phone']) : '';
-        
-        // Alternate row colors
-        $fill = !$fill;
-        $rowColor = $fill ? $rowColor2 : $rowColor1;
-        $pdf->SetFillColor($rowColor[0], $rowColor[1], $rowColor[2]);
-        
-        // Draw row background
-        $pdf->Rect(15, $pdf->GetY(), $posWidth + $nameWidth + $contactWidth + $langWidth + $timeWidth, $rowHeight, 'F');
-        
-        // Draw cell borders
-        $pdf->SetDrawColor($borderColor[0], $borderColor[1], $borderColor[2]);
-        $pdf->Line(15, $pdf->GetY(), 15, $pdf->GetY() + $rowHeight); // Left border
-        $pdf->Line(15 + $posWidth, $pdf->GetY(), 15 + $posWidth, $pdf->GetY() + $rowHeight); // After position
-        $pdf->Line(15 + $posWidth + $nameWidth, $pdf->GetY(), 15 + $posWidth + $nameWidth, $pdf->GetY() + $rowHeight); // After name
-        $pdf->Line(15 + $posWidth + $nameWidth + $contactWidth, $pdf->GetY(), 15 + $posWidth + $nameWidth + $contactWidth, $pdf->GetY() + $rowHeight); // After contact
-        $pdf->Line(15 + $posWidth + $nameWidth + $contactWidth + $langWidth, $pdf->GetY(), 15 + $posWidth + $nameWidth + $contactWidth + $langWidth, $pdf->GetY() + $rowHeight); // After language
-        $pdf->Line(15 + $posWidth + $nameWidth + $contactWidth + $langWidth + $timeWidth, $pdf->GetY(), 15 + $posWidth + $nameWidth + $contactWidth + $langWidth + $timeWidth, $pdf->GetY() + $rowHeight); // Right border
-        
-        // Cell content
-        $currentY = $pdf->GetY();
-        $pdf->SetXY(15, $currentY);
-        $pdf->Cell($posWidth, $rowHeight, $user['position'], 0, 0, 'C');
-        $pdf->Cell($nameWidth, $rowHeight, $name, 0, 0, 'L');
-        $pdf->Cell($contactWidth, $rowHeight, $contact, 0, 0, 'L');
-        $pdf->Cell($langWidth, $rowHeight, $user['language'], 0, 0, 'C');
-        $pdf->Cell($timeWidth, $rowHeight, $timeFormatted, 0, 1, 'C');
-    }
-    
-    // Draw bottom border for the last data row
-    $pdf->Line(15, $pdf->GetY(), 15 + $posWidth + $nameWidth + $contactWidth + $langWidth + $timeWidth, $pdf->GetY());
-    
-    // Calculate remaining space on the page and add empty rows
-    $endY = $pdf->GetY();
-    $pageHeight = $pdf->getPageHeight();
-    $footerHeight = 15; // Footer height in mm
-    $remainingSpace = $pageHeight - $endY - $footerHeight;
-    $maxAdditionalRows = floor($remainingSpace / $rowHeight);
-    
-    // Add empty rows (leave space for at least 5 rows, or add up to 15 rows)
-    $emptyRowsToAdd = min(max(5, $maxAdditionalRows), 15);
-    
-    // If we have a lot of entries already, start a new page for empty rows
-    if ($emptyRowsToAdd < 5 && count($waitingList) > 0) {
-        $pdf->AddPage();
-        $pdf->SetFont('helvetica', 'B', 14);
-        $pdf->Cell(0, 10, 'Additional Entries', 0, 1, 'C');
-        $pdf->Ln(5);
-        
-        // Redraw the header
-        $pdf->SetFillColor($headerBgColor[0], $headerBgColor[1], $headerBgColor[2]);
-        $pdf->SetTextColor($headerTextColor[0], $headerTextColor[1], $headerTextColor[2]);
-        $pdf->SetDrawColor($borderColor[0], $borderColor[1], $borderColor[2]);
+    $availableHeight = 297 - 30 - 35 - 20; // A4 height minus margins and header/footer space
+    $maxRowsPerPage = floor($availableHeight / $rowHeight) - 1; // -1 for header row
+    $itemsPerPage = $maxRowsPerPage * 2; // Two columns per page
+    $totalItems = count($waitingList);
+    $publicTotalPages = ceil($totalItems / $itemsPerPage);
+
+    // Public List
+    $pdf->setSectionInfo('Public', 1, $publicTotalPages);
+    $pdf->AddPage();
+    $pdf->SetFont('helvetica', 'B', 14);
+    $pdf->Cell(0, 10, 'Public Waiting List', 0, 1, 'C');
+    $pdf->Ln(5);
+
+    $currentIndex = 0;
+
+    while ($currentIndex < $totalItems) {
+        // Add header row
         $pdf->SetFont('helvetica', 'B', 10);
-        
-        // Draw header cells
-        $pdf->RoundedRect(15, $pdf->GetY(), $posWidth, $rowHeight, 1, '1000', 'DF');
-        $pdf->RoundedRect(15 + $posWidth, $pdf->GetY(), $nameWidth, $rowHeight, 1, '0000', 'DF');
-        $pdf->RoundedRect(15 + $posWidth + $nameWidth, $pdf->GetY(), $contactWidth, $rowHeight, 1, '0000', 'DF');
-        $pdf->RoundedRect(15 + $posWidth + $nameWidth + $contactWidth, $pdf->GetY(), $langWidth, $rowHeight, 1, '0000', 'DF');
-        $pdf->RoundedRect(15 + $posWidth + $nameWidth + $contactWidth + $langWidth, $pdf->GetY(), $timeWidth, $rowHeight, 1, '0001', 'DF');
-        
-        // Header text
-        $currentY = $pdf->GetY();
-        $pdf->SetXY(15, $currentY);
-        $pdf->Cell($posWidth, $rowHeight, 'Pos', 0, 0, 'C');
-        $pdf->Cell($nameWidth, $rowHeight, 'Name', 0, 0, 'C');
-        $pdf->Cell($contactWidth, $rowHeight, 'Contact', 0, 0, 'C');
-        $pdf->Cell($langWidth, $rowHeight, 'Language', 0, 0, 'C');
-        $pdf->Cell($timeWidth, $rowHeight, 'Time', 0, 1, 'C');
-        
-        // Calculate new number of empty rows for the new page
-        $emptyRowsToAdd = 20; // Fill most of the new page
-    }
-    
-    // Add empty rows
-    $pdf->SetFont('helvetica', '', 9);
-    $pdf->SetTextColor(0, 0, 0);
-    
-    $nextPosition = count($waitingList) > 0 ? $waitingList[count($waitingList) - 1]['position'] + 1 : 1;
-    
-    for ($i = 0; $i < $emptyRowsToAdd; $i++) {
-        // Alternate row colors
-        $fill = !$fill;
-        $rowColor = $fill ? $rowColor2 : $rowColor1;
-        $pdf->SetFillColor($rowColor[0], $rowColor[1], $rowColor[2]);
-        
-        // Draw row background
-        $pdf->Rect(15, $pdf->GetY(), $posWidth + $nameWidth + $contactWidth + $langWidth + $timeWidth, $rowHeight, 'F');
-        
-        // Draw cell borders
-        $pdf->SetDrawColor($borderColor[0], $borderColor[1], $borderColor[2]);
-        $pdf->Line(15, $pdf->GetY(), 15, $pdf->GetY() + $rowHeight); // Left border
-        $pdf->Line(15 + $posWidth, $pdf->GetY(), 15 + $posWidth, $pdf->GetY() + $rowHeight); // After position
-        $pdf->Line(15 + $posWidth + $nameWidth, $pdf->GetY(), 15 + $posWidth + $nameWidth, $pdf->GetY() + $rowHeight); // After name
-        $pdf->Line(15 + $posWidth + $nameWidth + $contactWidth, $pdf->GetY(), 15 + $posWidth + $nameWidth + $contactWidth, $pdf->GetY() + $rowHeight); // After contact
-        $pdf->Line(15 + $posWidth + $nameWidth + $contactWidth + $langWidth, $pdf->GetY(), 15 + $posWidth + $nameWidth + $contactWidth + $langWidth, $pdf->GetY() + $rowHeight); // After language
-        $pdf->Line(15 + $posWidth + $nameWidth + $contactWidth + $langWidth + $timeWidth, $pdf->GetY(), 15 + $posWidth + $nameWidth + $contactWidth + $langWidth + $timeWidth, $pdf->GetY() + $rowHeight); // Right border
-        
-        // Cell content - just the position number for empty rows
-        $currentY = $pdf->GetY();
-        $pdf->SetXY(15, $currentY);
-        $pdf->Cell($posWidth, $rowHeight, $nextPosition++, 0, 0, 'C');
-        $pdf->Cell($nameWidth, $rowHeight, '', 0, 0, 'L');
-        $pdf->Cell($contactWidth, $rowHeight, '', 0, 0, 'L');
-        $pdf->Cell($langWidth, $rowHeight, '', 0, 0, 'C');
-        $pdf->Cell($timeWidth, $rowHeight, '', 0, 1, 'C');
-    }
-    
-    // Draw bottom border for the last empty row
-    $pdf->Line(15, $pdf->GetY(), 15 + $posWidth + $nameWidth + $contactWidth + $langWidth + $timeWidth, $pdf->GetY());
-    
-    // Add comment section if needed
-    if (count($waitingList) > 0) {
-        // Check if we need a new page for comments
-        if ($pdf->GetY() > $pageHeight - 60) {
-            $pdf->AddPage();
-        } else {
-            $pdf->Ln(10);
-        }
-        
-        $pdf->SetFont('helvetica', 'B', 12);
-        $pdf->Cell(0, 10, 'Comments', 0, 1);
-        $pdf->SetDrawColor($borderColor[0], $borderColor[1], $borderColor[2]);
-        $pdf->Line(15, $pdf->GetY(), 195, $pdf->GetY());
-        $pdf->Ln(2);
-        
+        $pdf->Cell($posWidth, $rowHeight, 'Position', 1, 0, 'C');
+        $pdf->Cell($nameWidth, $rowHeight, 'Name', 1, 0, 'C');
+        $pdf->Cell($gapWidth, $rowHeight, '', 0, 0); // Gap between columns
+        $pdf->Cell($posWidth, $rowHeight, 'Position', 1, 0, 'C');
+        $pdf->Cell($nameWidth, $rowHeight, 'Name', 1, 1, 'C');
+
         $pdf->SetFont('helvetica', '', 9);
-        
-        foreach ($waitingList as $user) {
-            if (!empty($user['comment'])) {
-                $pdf->SetFont('helvetica', 'B', 9);
-                $pdf->Cell(15, 6, $user['position'], 0, 0);
-                $pdf->Cell(60, 6, $user['name'], 0, 1);
-                $pdf->SetFont('helvetica', 'I', 9);
-                $pdf->MultiCell(0, 5, $user['comment'], 0, 'L');
-                $pdf->Ln(2);
-                $pdf->Line(15, $pdf->GetY(), 195, $pdf->GetY());
-                $pdf->Ln(2);
+
+        // Store starting position for this page
+        $pageStartIndex = $currentIndex;
+        $itemsForThisPage = min($itemsPerPage, $totalItems - $currentIndex);
+        $itemsPerColumn = ceil($itemsForThisPage / 2);
+
+        // Fill rows on current page
+        for ($row = 0; $row < $maxRowsPerPage; $row++) {
+            // Left column entry (first half of items for this page)
+            $leftIndex = $pageStartIndex + $row;
+            if ($leftIndex < $pageStartIndex + $itemsPerColumn && $leftIndex < $totalItems) {
+                $user = $waitingList[$leftIndex];
+                $pdf->Cell($posWidth, $rowHeight, $user['position'], 1, 0, 'C');
+                $pdf->Cell($nameWidth, $rowHeight, $user['name'], 1, 0, 'L');
+            } else {
+                // Empty left column
+                $pdf->Cell($posWidth, $rowHeight, '', 1, 0, 'C');
+                $pdf->Cell($nameWidth, $rowHeight, '', 1, 0, 'L');
+            }
+
+            // Gap between columns
+            $pdf->Cell($gapWidth, $rowHeight, '', 0, 0);
+
+            // Right column entry (second half of items for this page)
+            $rightIndex = $pageStartIndex + $itemsPerColumn + $row;
+            if ($rightIndex < $pageStartIndex + $itemsForThisPage && $rightIndex < $totalItems) {
+                $user = $waitingList[$rightIndex];
+                $pdf->Cell($posWidth, $rowHeight, $user['position'], 1, 0, 'C');
+                $pdf->Cell($nameWidth, $rowHeight, $user['name'], 1, 1, 'L');
+            } else {
+                // Empty right column
+                $pdf->Cell($posWidth, $rowHeight, '', 1, 0, 'C');
+                $pdf->Cell($nameWidth, $rowHeight, '', 1, 1, 'L');
             }
         }
+
+        // Move index forward by the number of items we processed on this page
+        $currentIndex += $itemsForThisPage;
+
+        // Add new page if there are more entries
+        if ($currentIndex < $totalItems) {
+            $pdf->incrementSectionPage();
+            $pdf->AddPage();
+            $pdf->SetFont('helvetica', 'B', 14);
+            $pdf->Cell(0, 10, 'Public Waiting List (continued)', 0, 1, 'C');
+            $pdf->Ln(5);
+        }
     }
+
+    // Calculate Internal List pages needed
+    $internalRowHeight = 6;
+    $internalAvailableHeight = 297 - 30 - 35 - 20; // A4 height minus margins and header/footer space
+    $internalMaxRowsPerPage = floor($internalAvailableHeight / $internalRowHeight) - 1; // -1 for header row
+    $internalTotalPages = ceil($totalItems / $internalMaxRowsPerPage);
+
+    // Internal List
+    $pdf->setSectionInfo('Internal', 1, $internalTotalPages);
+    $pdf->AddPage();
+    $pdf->SetFont('helvetica', 'B', 14);
+    $pdf->Cell(0, 10, 'Internal Waiting List', 0, 1, 'C');
+    $pdf->Ln(5);
+
+    // Define table dimensions - use full width available (180mm usable width)
+    $posWidth = 15;
+    $nameWidth = 35;
+    $contactWidth = 45;
+    $langWidth = 20;
+    $timeWidth = 35;
+    $commentWidth = 30; // Reduced to fit exactly
+    $rowHeight = 6;
+
+    // Total width: 15+35+45+20+35+30 = 180mm (fills available width)
+
+    $pdf->SetFont('helvetica', 'B', 9);
+    $pdf->Cell($posWidth, $rowHeight, 'Pos', 1, 0, 'C');
+    $pdf->Cell($nameWidth, $rowHeight, 'Name', 1, 0, 'C');
+    $pdf->Cell($contactWidth, $rowHeight, 'Contact', 1, 0, 'C');
+    $pdf->Cell($langWidth, $rowHeight, 'Lang', 1, 0, 'C');
+    $pdf->Cell($timeWidth, $rowHeight, 'Time', 1, 0, 'C');
+    $pdf->Cell($commentWidth, $rowHeight, 'Comment', 1, 1, 'C');
+
+    $pdf->SetFont('helvetica', '', 8);
     
-    // Close and output PDF document
+    $internalCurrentRow = 0;
+    foreach ($waitingList as $user) {
+        // Check if we need a new page
+        if ($internalCurrentRow > 0 && $internalCurrentRow % $internalMaxRowsPerPage == 0) {
+            $pdf->incrementSectionPage();
+            $pdf->AddPage();
+            $pdf->SetFont('helvetica', 'B', 14);
+            $pdf->Cell(0, 10, 'Internal Waiting List (continued)', 0, 1, 'C');
+            $pdf->Ln(5);
+            
+            // Add header row on new page
+            $pdf->SetFont('helvetica', 'B', 9);
+            $pdf->Cell($posWidth, $rowHeight, 'Pos', 1, 0, 'C');
+            $pdf->Cell($nameWidth, $rowHeight, 'Name', 1, 0, 'C');
+            $pdf->Cell($contactWidth, $rowHeight, 'Contact', 1, 0, 'C');
+            $pdf->Cell($langWidth, $rowHeight, 'Lang', 1, 0, 'C');
+            $pdf->Cell($timeWidth, $rowHeight, 'Time', 1, 0, 'C');
+            $pdf->Cell($commentWidth, $rowHeight, 'Comment', 1, 1, 'C');
+            $pdf->SetFont('helvetica', '', 8);
+        }
+        
+        $timeFormatted = date('Y-m-d H:i', $user['time']);
+        
+        // Calculate the height needed for each cell based on text content
+        $nameHeight = $pdf->getStringHeight($nameWidth, $user['name']);
+        $contactHeight = $pdf->getStringHeight($contactWidth, $user['email_or_phone']);
+        $commentHeight = $pdf->getStringHeight($commentWidth, $user['comment']);
+        
+        // Use the maximum height needed, but at least the minimum row height
+        $cellHeight = max($rowHeight, $nameHeight, $contactHeight, $commentHeight);
+        
+        // Store current Y position
+        $currentY = $pdf->GetY();
+        
+        // Draw all cells with the same calculated height
+        $pdf->MultiCell($posWidth, $cellHeight, $user['position'], 1, 'C', false, 0, '', '', true, 0, false, true, $cellHeight, 'M');
+        $pdf->MultiCell($nameWidth, $cellHeight, $user['name'], 1, 'L', false, 0, '', '', true, 0, false, true, $cellHeight, 'M');
+        $pdf->MultiCell($contactWidth, $cellHeight, $user['email_or_phone'], 1, 'L', false, 0, '', '', true, 0, false, true, $cellHeight, 'M');
+        $pdf->MultiCell($langWidth, $cellHeight, $user['language'], 1, 'C', false, 0, '', '', true, 0, false, true, $cellHeight, 'M');
+        $pdf->MultiCell($timeWidth, $cellHeight, $timeFormatted, 1, 'C', false, 0, '', '', true, 0, false, true, $cellHeight, 'M');
+        $pdf->MultiCell($commentWidth, $cellHeight, $user['comment'], 1, 'L', false, 1, '', '', true, 0, false, true, $cellHeight, 'M');
+        
+        $internalCurrentRow++;
+    }
+
     $pdf->Output('saga_waiting_list_' . date('Y-m-d') . '.pdf', 'I');
 
 } catch (Exception $e) {

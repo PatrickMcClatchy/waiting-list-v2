@@ -3,3 +3,39 @@ Stack trace:
 #0 /Users/paddy/Downloads/waitinglistv3current2-9/webroot/admin/api_proxy.php(77): include()
 #1 {main}
   thrown in /Users/paddy/Downloads/waitinglistv3current2-9/app-backend/api/export_waiting_list.php on line 131
+[16-Jun-2025 16:58:06 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 82
+[16-Jun-2025 16:58:06 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83
+[16-Jun-2025 16:58:06 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83
+[16-Jun-2025 16:58:06 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 82
+[16-Jun-2025 16:58:06 UTC] PHP Deprecated:  Implicit conversion from float 49.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83
+[16-Jun-2025 16:58:06 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83
+[16-Jun-2025 16:58:06 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 82
+[16-Jun-2025 16:58:06 UTC] PHP Deprecated:  Implicit conversion from float 82.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83
+[16-Jun-2025 16:58:06 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83
+[16-Jun-2025 17:01:48 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 82
+[16-Jun-2025 17:01:48 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83
+[16-Jun-2025 17:01:48 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83
+[16-Jun-2025 17:01:48 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 82
+[16-Jun-2025 17:01:48 UTC] PHP Deprecated:  Implicit conversion from float 49.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83
+[16-Jun-2025 17:01:48 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83
+[16-Jun-2025 17:01:48 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 82
+[16-Jun-2025 17:01:48 UTC] PHP Deprecated:  Implicit conversion from float 82.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83
+[16-Jun-2025 17:01:48 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83
+[16-Jun-2025 17:04:13 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 82
+[16-Jun-2025 17:04:13 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83
+[16-Jun-2025 17:04:13 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83
+[16-Jun-2025 17:04:13 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 82
+[16-Jun-2025 17:04:13 UTC] PHP Deprecated:  Implicit conversion from float 49.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83
+[16-Jun-2025 17:04:13 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83
+[16-Jun-2025 17:04:13 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 82
+[16-Jun-2025 17:04:13 UTC] PHP Deprecated:  Implicit conversion from float 82.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83
+[16-Jun-2025 17:04:13 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83
+[16-Jun-2025 17:08:17 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 82
+[16-Jun-2025 17:08:17 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83
+[16-Jun-2025 17:08:17 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83
+[16-Jun-2025 17:08:17 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 82
+[16-Jun-2025 17:08:17 UTC] PHP Deprecated:  Implicit conversion from float 49.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83
+[16-Jun-2025 17:08:17 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83
+[16-Jun-2025 17:08:17 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 82
+[16-Jun-2025 17:08:17 UTC] PHP Deprecated:  Implicit conversion from float 82.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83
+[16-Jun-2025 17:08:17 UTC] PHP Deprecated:  Implicit conversion from float 16.5 to int loses precision in /Users/paddy/CODE/waiting-listv3.0/app-backend/api/export_waiting_list.php on line 83

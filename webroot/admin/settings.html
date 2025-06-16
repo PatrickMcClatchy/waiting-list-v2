@@ -12,7 +12,12 @@
             <div class="container">
                 <div class="admin-header-content">
                     <h1 class="admin-title">SAGA Waiting List Admin</h1>
-                    <button id="logoutBtn" class="btn btn-danger btn-sm">Logout</button>
+                    <button id="logoutBtn" class="btn btn-danger btn-sm">
+                        <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                        </svg>
+                        Logout
+                    </button>
                 </div>
             </div>
         </header>
@@ -21,7 +26,7 @@
             <nav class="admin-nav">
                 <ul class="admin-nav-list">
                     <li class="admin-nav-item">
-                        <a href="/admin/index.html" class="admin-nav-link">Dashboard</a>
+                        <a href="/admin/index.html" class="admin-nav-link">Main</a>
                     </li>
                     <li class="admin-nav-item">
                         <a href="/admin/settings.html" class="admin-nav-link active">Settings</a>
@@ -33,12 +38,20 @@
                 <!-- Scheduled Open Times -->
                 <div class="admin-card">
                     <div class="admin-card-header">
-                        <h2 class="admin-card-title">Scheduled List Opening Times</h2>
+                        <h2 class="admin-card-title">
+                            <svg style="width: 24px; height: 24px; margin-right: 8px; vertical-align: text-bottom;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Scheduled List Opening Times
+                        </h2>
                     </div>
                     
                     <form id="scheduledOpenTimesForm">
                         <div class="form-group">
                             <label for="scheduledOpenTimes" class="form-label">
+                                <svg style="width: 16px; height: 16px; margin-right: 6px; vertical-align: text-bottom;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
                                 Scheduled Open Times (e.g., Monday 09:00,Thursday 14:00)
                             </label>
                             <input type="text" id="scheduledOpenTimes" name="scheduledOpenTimes" class="form-control" required>
@@ -47,19 +60,32 @@
                             </small>
                         </div>
                         
-                        <button type="submit" class="btn">Update Schedule</button>
+                        <button type="submit" class="btn btn-primary">
+                            <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Update Schedule
+                        </button>
                     </form>
                 </div>
                 
                 <!-- Closed Message -->
                 <div class="admin-card">
                     <div class="admin-card-header">
-                        <h2 class="admin-card-title">Closed List Message</h2>
+                        <h2 class="admin-card-title">
+                            <svg style="width: 24px; height: 24px; margin-right: 8px; vertical-align: text-bottom;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                            </svg>
+                            Closed List Message
+                        </h2>
                     </div>
                     
                     <form id="closedMessageForm">
                         <div class="form-group">
                             <label for="closedMessage" class="form-label">
+                                <svg style="width: 16px; height: 16px; margin-right: 6px; vertical-align: text-bottom;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+                                </svg>
                                 Message to display when the waiting list is closed
                             </label>
                             <textarea id="closedMessage" name="message" class="form-control" rows="4" required></textarea>
@@ -68,18 +94,31 @@
                             </small>
                         </div>
                         
-                        <button type="submit" class="btn">Update Message</button>
+                        <button type="submit" class="btn btn-primary">
+                            <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Update Message
+                        </button>
                     </form>
                 </div>
 
                 <div class="admin-card">
                     <div class="admin-card-header">
-                        <h2 class="admin-card-title">Success Message</h2>
+                        <h2 class="admin-card-title">
+                            <svg style="width: 24px; height: 24px; margin-right: 8px; vertical-align: text-bottom;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Success Message
+                        </h2>
                     </div>
                     
                     <form id="successMessageForm">
                         <div class="form-group">
                             <label for="successMessage" class="form-label">
+                                <svg style="width: 16px; height: 16px; margin-right: 6px; vertical-align: text-bottom;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+                                </svg>
                                 Message to display when a user successfully joins the waiting list
                             </label>
                             <textarea id="successMessage" name="message" class="form-control" rows="4" required></textarea>
@@ -89,55 +128,135 @@
                             </small>
                         </div>
                         
-                        <button type="submit" class="btn">Update Message</button>
+                        <button type="submit" class="btn btn-primary">
+                            <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Update Message
+                        </button>
                     </form>
                 </div>
                 
                 <!-- Upload Confirmation PDF -->
                 <div class="admin-card">
                     <div class="admin-card-header">
-                        <h2 class="admin-card-title">Confirmation PDF</h2>
+                        <h2 class="admin-card-title">
+                            <svg style="width: 24px; height: 24px; margin-right: 8px; vertical-align: text-bottom;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Confirmation PDF
+                        </h2>
                     </div>
                     
                     <form id="uploadPdfForm" enctype="multipart/form-data">
                         <div class="form-group">
-                            <label for="pdfFile" class="form-label">Upload new confirmation PDF</label>
+                            <label for="pdfFile" class="form-label">
+                                <svg style="width: 16px; height: 16px; margin-right: 6px; vertical-align: text-bottom;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                </svg>
+                                Upload new confirmation PDF
+                            </label>
                             <input type="file" id="pdfFile" name="pdf" class="form-control" accept="application/pdf" required>
                             <small class="form-text text-muted">
                                 This PDF will be provided to users after they successfully join the waiting list.
                             </small>
                         </div>
                         
-                        <div class="d-flex" style="gap: 10px;">
-                            <button type="submit" class="btn">Upload PDF</button>
-                            <a href="/public/confirmation.pdf" target="_blank" class="btn">View Current PDF</a>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-upload">
+                                <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                </svg>
+                                Upload PDF
+                            </button>
+                            <a href="/public/confirmation.pdf" target="_blank" class="btn btn-view">
+                                <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                                View Current PDF
+                            </a>
                         </div>
                     </form>
                 </div>
                 
-                <!-- Instructions -->
                 <div class="admin-card">
                     <div class="admin-card-header">
-                        <h2 class="admin-card-title">Instructions</h2>
+                      <h2 class="admin-card-title">Settings Guide</h2>
                     </div>
-                    
-                    <ul style="padding-left: 20px;">
-                        <li class="mb-2">
-                            <strong>Scheduled List Opening Times:</strong> Set specific days and times when the waiting list will automatically open for new entries. Format: <code>Day HH:MM</code> (e.g., <code>Monday 09:00,Thursday 14:00</code>).
-                        </li>
-                        <li class="mb-2">
-                            <strong>Closed List Message:</strong> Customize the message that users see when the waiting list is closed.
-                        </li>
-                        <li class="mb-2">
-                            <strong>Confirmation PDF:</strong> Upload a PDF document that users will receive as confirmation when they join the waiting list.
-                        </li>
-                    </ul>
-                </div>
-            </main>
+                  
+                    <div style="padding: 20px; font-family: sans-serif; color: #333;">
+                  
+                      <h3 style="margin-top: 20px;">📅 Scheduled Opening Times</h3>
+                      <p>Opens the list automatically and clears entries (backup is created).</p>
+                      <p><strong>Format:</strong> <code>Day HH:MM</code> (24h)</p>
+                      <p><strong>Examples:</strong></p>
+                      <ul style="margin-left: 20px;">
+                        <li><code>Monday 09:00</code></li>
+                        <li><code>Monday 09:00,Thursday 14:00</code></li>
+                        <li><code>Monday 08:30,Wednesday 13:15,Friday 16:00</code></li>
+                      </ul>
+                  
+                      <h3 style="margin-top: 20px;">🚫 Closed List Message</h3>
+                      <p>Shown when sign-ups are closed. Suggest including:</p>
+                      <ul style="margin-left: 20px;">
+                        <li>Next opening time</li>
+                        <li>Contact details</li>
+                      </ul>
+                  
+                      <h3 style="margin-top: 20px;">✅ Success Message</h3>
+                      <p>Shown after sign-up. Use <code>{{position}}</code> to show queue number.</p>
+                      <p>Recommend including:</p>
+                      <ul style="margin-left: 20px;">
+                        <li>Confirmation</li>
+                        <li>Next steps</li>
+                        <li>Contact info</li>
+                      </ul>
+                  
+                      <h3 style="margin-top: 20px;">📄 Confirmation PDF</h3>
+                      <p>Downloadable after sign-up. Suggest including:</p>
+                      <ul style="margin-left: 20px;">
+                        <li>What the list means</li>
+                        <li>Contact info</li>
+                        <li>Expected waiting time</li>
+                      </ul>
+                      <p><strong>Note:</strong> Keep under 2MB. Replaces any existing PDF.</p>
+                  
+                      <div style="margin-top: 30px; padding: 15px; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
+                        <h4 style="margin-bottom: 10px;">Need Help?</h4>
+                        <p>Email <strong>support@saga.com</strong></p>
+                      </div>
+                  
+                    </div>
+                  </div>
+                              </main>
         </div>
     </div>
     
+    <!-- Include navigation script -->
+    <script src="/admin/js/navigation.js"></script>
+    
     <script>
+        // Settings-specific functionality
+        function initializeSettings() {
+            checkLoginStatus();
+            loadScheduledOpenTimes();
+            loadClosedMessage();
+            loadSuccessMessage();
+            
+            // Event listeners
+            document.getElementById('scheduledOpenTimesForm').addEventListener('submit', updateScheduledOpenTimes);
+            document.getElementById('closedMessageForm').addEventListener('submit', updateClosedMessage);
+            document.getElementById('successMessageForm').addEventListener('submit', updateSuccessMessage);
+            document.getElementById('uploadPdfForm').addEventListener('submit', uploadPdf);
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                window.location.href = '/admin/api_proxy.php?endpoint=logout.php';
+            });
+        }
+        
+        // Make initializeSettings globally available
+        window.initializeSettings = initializeSettings;
+        
         // Check login status
         function checkLoginStatus() {
             fetch('/admin/api_proxy.php?endpoint=check_session.php')
@@ -199,7 +318,12 @@
             const submitBtn = event.submitter;
             
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Updating...';
+            submitBtn.innerHTML = `
+                <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                Updating...
+            `;
             
             fetch('/admin/api_proxy.php?endpoint=update_scheduled_open_times.php', {
                 method: 'POST',
@@ -214,13 +338,23 @@
                     showPopupMessage('Failed to update scheduled open times', 'error');
                 }
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Update Schedule';
+                submitBtn.innerHTML = `
+                    <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Update Schedule
+                `;
             })
             .catch(error => {
                 console.error('Error updating scheduled open times:', error);
                 showPopupMessage('Error updating scheduled open times', 'error');
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Update Schedule';
+                submitBtn.innerHTML = `
+                    <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Update Schedule
+                `;
             });
         }
         
@@ -249,7 +383,12 @@
             const submitBtn = event.submitter;
             
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Updating...';
+            submitBtn.innerHTML = `
+                <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                Updating...
+            `;
             
             fetch('/admin/api_proxy.php?endpoint=update_closed_message.php', {
                 method: 'POST',
@@ -264,13 +403,23 @@
                     showPopupMessage('Failed to update closed message', 'error');
                 }
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Update Message';
+                submitBtn.innerHTML = `
+                    <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Update Message
+                `;
             })
             .catch(error => {
                 console.error('Error updating closed message:', error);
                 showPopupMessage('Error updating closed message', 'error');
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Update Message';
+                submitBtn.innerHTML = `
+                    <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Update Message
+                `;
             });
         }
 
@@ -298,7 +447,12 @@
             const submitBtn = event.submitter;
             
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Updating...';
+            submitBtn.innerHTML = `
+                <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                Updating...
+            `;
             
             fetch('/admin/api_proxy.php?endpoint=update_success_message.php', {
                 method: 'POST',
@@ -313,13 +467,23 @@
                     showPopupMessage('Failed to update success message', 'error');
                 }
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Update Message';
+                submitBtn.innerHTML = `
+                    <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Update Message
+                `;
             })
             .catch(error => {
                 console.error('Error updating success message:', error);
                 showPopupMessage('Error updating success message', 'error');
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Update Message';
+                submitBtn.innerHTML = `
+                    <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Update Message
+                `;
             });
         }
         
@@ -331,7 +495,12 @@
             const submitBtn = event.submitter;
             
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Uploading...';
+            submitBtn.innerHTML = `
+                <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                Uploading...
+            `;
             
             fetch('/admin/api_proxy.php?endpoint=upload_pdf.php', {
                 method: 'POST',
@@ -346,31 +515,29 @@
                     showPopupMessage('Failed to upload PDF: ' + (data.message || 'Unknown error'), 'error');
                 }
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Upload PDF';
+                submitBtn.innerHTML = `
+                    <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                    </svg>
+                    Upload PDF
+                `;
             })
             .catch(error => {
                 console.error('Error uploading PDF:', error);
                 showPopupMessage('Error uploading PDF', 'error');
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Upload PDF';
+                submitBtn.innerHTML = `
+                    <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                    </svg>
+                    Upload PDF
+                `;
             });
         }
         
-        // Initialize
+        // Initialize on page load
         document.addEventListener('DOMContentLoaded', () => {
-            checkLoginStatus();
-            loadScheduledOpenTimes();
-            loadClosedMessage();
-            loadSuccessMessage();
-            
-            // Event listeners
-            document.getElementById('scheduledOpenTimesForm').addEventListener('submit', updateScheduledOpenTimes);
-            document.getElementById('closedMessageForm').addEventListener('submit', updateClosedMessage);
-            document.getElementById('successMessageForm').addEventListener('submit', updateSuccessMessage);
-            document.getElementById('uploadPdfForm').addEventListener('submit', uploadPdf);
-            document.getElementById('logoutBtn').addEventListener('click', () => {
-                window.location.href = '/admin/api_proxy.php?endpoint=logout.php';
-            });
+            initializeSettings();
         });
     </script>
 </body>
