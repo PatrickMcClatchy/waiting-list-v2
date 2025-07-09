@@ -1,15 +1,1 @@
-# Redirect to /public/ folder if desired (optional)
-DirectoryIndex /public/index.php
-
-# Enable PHP execution (usually not needed on IONOS, but safe)
-AddHandler application/x-httpd-php .php
-AddType application/x-httpd-php .php
-
-# Show PHP errors (for development only!)
-php_flag display_errors on
-php_value error_reporting -1
-
-# Protect hidden files like .env or .htaccess
-<FilesMatch "^\.">
-    Require all denied
-</FilesMatch>
+DirectoryIndex /public

@@ -377,15 +377,15 @@
   background-color: var(--bg-light); /* Default background */
   border-radius: var(--radius);
   border: 2px solid transparent;
-  transition: all 0.3s ease;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .switch-container.open {
-  background-color: rgba(46, 204, 113, 0.2); /* Light green hue for open status */
+  box-shadow: 0 0 10px rgba(46, 204, 113, 0.5); /* Light green shadow for open status */
 }
 
 .switch-container.closed {
-  background-color: rgba(231, 76, 60, 0.2); /* Light red hue for closed status */
+  box-shadow: 0 0 10px rgba(231, 76, 60, 0.5); /* Light red shadow for closed status */
 }
 
 .switch-container:hover {

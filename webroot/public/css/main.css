@@ -102,6 +102,26 @@ textarea.form-control {
   resize: vertical;
 }
 
+/* Ensure consistent styling for input and textarea fields */
+input.form-control,
+textarea.form-control {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; /* Match font family */
+    font-size: 1rem; /* Match font size */
+    color: var(--text-color); /* Match text color */
+    padding: 0.75rem 1rem; /* Match padding */
+    border: 1px solid var(--border-color); /* Match border */
+    border-radius: var(--radius); /* Match border radius */
+    transition: var(--transition); /* Match transition */
+    width: 100%; /* Match width */
+    box-sizing: border-box; /* Ensure consistent box sizing */
+}
+
+/* Specific styles for textarea */
+textarea.form-control {
+    min-height: 100px; /* Set minimum height */
+    resize: vertical; /* Allow vertical resizing only */
+}
+
 /* Buttons */
 .btn {
   display: inline-block;

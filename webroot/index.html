@@ -5,13 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Redirecting...</title>
 
-  <!-- Meta refresh as fallback -->
-  <meta http-equiv="refresh" content="0;URL=public/">
-
   <!-- JavaScript redirect -->
   <script>
-    window.location.href = "public/";
+    // Redirect to the public folder, ensuring compatibility with or without trailing slash
+    const targetUrl = window.location.origin + window.location.pathname.replace(/\/?$/, '/public/');
+    window.location.href = targetUrl;
   </script>
+
+  <!-- Meta refresh as fallback -->
+  <meta http-equiv="refresh" content="0;URL=public/" />
 </head>
 <body>
   <p>Redirecting to <a href="public/">public interface</a>...</p>
