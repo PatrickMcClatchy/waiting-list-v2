@@ -65,7 +65,19 @@ try {
        $row = $result->fetchArray(SQLITE3_ASSOC);
        $position = $row['max_position'] + 1;
 
-       // Insert new user
+       // Calculate the nearest Wednesday or Friday
+       $signupDate = new DateTime();
+       $dayOfWeek = $signupDate->format('w'); // 0 (Sunday) to 6 (Saturday)
+
+       if ($dayOfWeek <= 3) { // If today is Sunday, Monday, Tuesday, or Wednesday
+           $signupDate->modify('next Wednesday');
+       } else { // If today is Thursday, Friday, or Saturday
+           $signupDate->modify('next Friday');
+       }
+
+       $formattedDate = $signupDate->format('l, F j, Y'); // Example: "Wednesday, March 15, 2023"
+
+       // Insert the new user
        $stmt = $db->prepare('INSERT INTO waiting_list (name, email_or_phone, comment, language, time, confirmed, position) VALUES (:name, :email, :comment, :language, :time, :confirmed, :position)');
        $stmt->bindValue(':name', $name, SQLITE3_TEXT);
        $stmt->bindValue(':email', $email, SQLITE3_TEXT);
@@ -82,17 +94,19 @@ try {
        $row = $result->fetchArray(SQLITE3_ASSOC);
        $success_message = $row ? $row['value'] : 'You\'ve successfully signed up! Your position in the waiting list is: #{{position}}';
 
-       // Replace the placeholder {{position}} with the actual position
+       // Replace placeholders in the success message
        $success_message = str_replace('{{position}}', $position, $success_message);
+       $success_message = str_replace('{{next_appointment}}', $formattedDate, $success_message);
 
        echo json_encode([
            'success' => true,
            'message' => $success_message,
            'position' => $position,
+           'assigned_date' => $formattedDate,
        ]);
    } else {
        echo json_encode(['success' => false, 'message' => 'Invalid request.']);
    }
 } catch (Exception $e) {
-   echo json_encode(['success' => false, 'message' => 'Failed to add user: ' . $e->getMessage()]);
+   echo json_encode(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()]);
 }
