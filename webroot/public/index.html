@@ -12,8 +12,8 @@
     <div class="container">
         <header class="header">
             <h1>Join the SAGA Waiting List</h1>
-            <p>Fill out the form below to enter the waiting list</p>
         </header>
+        <div id="waitingListOpenMessage" style="display: none;" class="alert alert-success"></div>
         
         <main>
             <div class="card" id="signup-section">
@@ -99,20 +99,27 @@
 
                 if (response.success) {
                     if (response.isOpen === 1) {
-                        $('#signupForm').show();
-                        $('#waitingListClosedMessage').hide();
-                        $('#signupForm input, #signupForm select, #signupForm textarea').prop('disabled', false);
-                        $('#submitButton').prop('disabled', true);
+                        $.get('/public/api_proxy.php?endpoint=get_open_message.php', function(messageResponse) {
+                            console.log('get_open_message response:', messageResponse);
+                            const openMessage = messageResponse.success ? messageResponse.message : 'The waiting list is currently open.';
+                            $('#signupForm').show();
+                            $('#waitingListClosedMessage').hide();
+                            $('#waitingListOpenMessage').show().text(openMessage);
+                            $('#signupForm input, #signupForm select, #signupForm textarea').prop('disabled', false);
+                            $('#submitButton').prop('disabled', true);
+                        }, 'json').fail(function(jqXHR, textStatus, errorThrown) {
+                            console.error('Error fetching open message:', textStatus, errorThrown);
+                            $('#waitingListOpenMessage').show().text('The waiting list is currently open.');
+                        });
                     } else {
                         $.get('/public/api_proxy.php?endpoint=get_closed_message.php', function(messageResponse) {
                             console.log('get_closed_message response:', messageResponse);
                             const closedMessage = messageResponse.success ? messageResponse.message : 'The waiting list is currently closed.';
                             $('#signupForm').hide();
-                            $('#waitingListClosedMessage').show();
-                            $('#closedMessageText').text(closedMessage);
+                            $('#waitingListClosedMessage').show().text(closedMessage);
                         }, 'json').fail(function(jqXHR, textStatus, errorThrown) {
                             console.error('Error fetching closed message:', textStatus, errorThrown);
-                            $('#closedMessageText').text('The waiting list is currently closed.');
+                            $('#waitingListClosedMessage').show().text('The waiting list is currently closed.');
                         });
                     }
                 } else {
