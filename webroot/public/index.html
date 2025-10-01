@@ -99,7 +99,8 @@
 
                 if (response.success) {
                     if (response.isOpen === 1) {
-                        $.get('/public/api_proxy.php?endpoint=get_open_message.php', function(messageResponse) {
+                        // Fetch and display the open message
+                        $.post('/public/api_proxy.php?endpoint=get_open_message.php', function(messageResponse) {
                             console.log('get_open_message response:', messageResponse);
                             const openMessage = messageResponse.success ? messageResponse.message : 'The waiting list is currently open.';
                             $('#signupForm').show();
@@ -112,6 +113,7 @@
                             $('#waitingListOpenMessage').show().text('The waiting list is currently open.');
                         });
                     } else {
+                        // Fetch and display the closed message
                         $.get('/public/api_proxy.php?endpoint=get_closed_message.php', function(messageResponse) {
                             console.log('get_closed_message response:', messageResponse);
                             const closedMessage = messageResponse.success ? messageResponse.message : 'The waiting list is currently closed.';
