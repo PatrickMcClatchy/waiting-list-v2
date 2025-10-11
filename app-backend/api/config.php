@@ -11,7 +11,7 @@ $backupDir = __DIR__ . '/../backups/';
 return [
    // Admin password hash - default password is "admin123"
    // Generated using password_hash() with PASSWORD_DEFAULT algorithm
-   'admin_password_hash' => '$2y$12$B62GuydxUnzosK17zJ8Hruhhy5bdr8NzDkaWf0dqyYH./F0HpZYsu',
+   'admin_password_hash' => '$2y$12$BY2Z/eVcJiucT.7rK9Afu.30JDCjByCX5V7L0/e8HMVXs9FRkz6hG',
    
    // Database configuration
    'db_path' => $dbPath,

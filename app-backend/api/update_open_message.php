@@ -37,7 +37,7 @@ try {
         if ($row['count'] > 0) {
             $stmt = $db->prepare("UPDATE settings SET value = :message WHERE key = 'open_message'");
         } else {
-            $stmt = $db->prepare("INSERT INTO settings (key, value) VALUES ('open_message', :message')");
+            $stmt = $db->prepare("INSERT INTO settings (key, value) VALUES ('open_message', :message)");
         }
 
         $stmt->bindValue(':message', $message, SQLITE3_TEXT);

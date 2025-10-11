@@ -40,7 +40,7 @@ try {
     )");
     echo "Settings table created successfully\n";
     
-    // Create waiting_list table with ALL necessary columns
+    // Create waiting_list table
     $db->exec("CREATE TABLE IF NOT EXISTS waiting_list (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
@@ -55,16 +55,16 @@ try {
     
     // Default settings
     $defaultSettings = [
-        'waiting_list_open' => '1',
+        'waiting_list_open' => '0',
         'scheduled_open_times' => 'Monday 09:00,Thursday 14:00',
         'closed_message' => 'The waiting list is currently closed. Please check back later.',
+        'open_message' => 'The waiting list is currently open. Feel free to sign up!',
         'success_message' => 'You\'ve successfully signed up! Your position in the waiting list is: #{{position}}',
         'manual_close_date' => ''
     ];
     
     // Insert default settings if they don't exist
     $stmt = $db->prepare("INSERT OR IGNORE INTO settings (key, value) VALUES (:key, :value)");
-    
     foreach ($defaultSettings as $key => $value) {
         $stmt->bindValue(':key', $key, SQLITE3_TEXT);
         $stmt->bindValue(':value', $value, SQLITE3_TEXT);
