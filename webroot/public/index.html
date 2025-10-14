@@ -140,6 +140,7 @@
 
         $(document).ready(function() {
             checkWaitingListState();
+            $.post('/public/api_proxy.php?endpoint=scheduled_open.php');
 
             $('#signupForm').submit(function(event) {
                 event.preventDefault();
