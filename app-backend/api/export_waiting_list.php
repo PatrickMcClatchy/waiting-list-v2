@@ -65,8 +65,11 @@ try {
     $pdf->setPrintFooter(true);
     $pdf->SetDefaultMonospacedFont('courier');
     $pdf->SetMargins(15, 15, 15);
-    $pdf->SetAutoPageBreak(TRUE, 20);
+    $pdf->SetAutoPageBreak(FALSE, 20); // Disable auto page break - we'll handle manually
     $pdf->setImageScale(1.25);
+    
+    // Enable Unicode font subsetting for proper special character support
+    $pdf->setFontSubsetting(true);
 
     // PUBLIC LIST - Two Column Layout
     $posWidth = 25;
@@ -116,8 +119,9 @@ try {
             $leftIndex = $currentIndex + $row;
             if ($leftIndex < $totalItems) {
                 $user = $waitingList[$leftIndex];
+                $name = html_entity_decode($user['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
                 $pdf->Cell($posWidth, $rowHeight, $user['position'], 1, 0, 'C');
-                $pdf->Cell($nameWidth, $rowHeight, $user['name'], 1, 0, 'L');
+                $pdf->Cell($nameWidth, $rowHeight, $name, 1, 0, 'L');
             } else {
                 // Empty left column cell
                 $pdf->Cell($posWidth, $rowHeight, '', 1, 0, 'C');
@@ -131,8 +135,9 @@ try {
             $rightIndex = $currentIndex + $maxRowsPerColumn + $row;
             if ($rightIndex < $totalItems) {
                 $user = $waitingList[$rightIndex];
+                $name = html_entity_decode($user['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
                 $pdf->Cell($posWidth, $rowHeight, $user['position'], 1, 0, 'C');
-                $pdf->Cell($nameWidth, $rowHeight, $user['name'], 1, 1, 'L');
+                $pdf->Cell($nameWidth, $rowHeight, $name, 1, 1, 'L');
             } else {
                 // Empty right column cell
                 $pdf->Cell($posWidth, $rowHeight, '', 1, 0, 'C');
@@ -156,22 +161,19 @@ try {
     $langWidth = 22;
     $timeWidth = 32;
     $commentWidth = 22;
-    $rowHeight = 6;
+    $internalRowHeight = 6;
 
-    // Calculate internal list pages
-    $internalHeaderSpace = 25;
-    $internalAvailableHeight = 297 - $topMargin - $internalHeaderSpace - $footerSpace;
-    $internalMaxRowsPerPage = floor($internalAvailableHeight / $rowHeight);
-    $internalTotalPages = ceil($totalItems / $internalMaxRowsPerPage);
+    // Calculate internal list pages - estimate conservatively
+    $internalTotalPages = ceil($totalItems / 35); // Conservative estimate
 
     // Internal List
     $pdf->setSectionInfo('Internal', 1, $internalTotalPages);
-    $internalCurrentRow = 0;
     $currentInternalPage = 1;
+    $needNewPage = true;
 
     for ($i = 0; $i < $totalItems; $i++) {
         // Add new page and header when needed
-        if ($internalCurrentRow == 0 || $internalCurrentRow % $internalMaxRowsPerPage == 0) {
+        if ($needNewPage) {
             if ($i > 0) {
                 $pdf->incrementSectionPage();
                 $currentInternalPage++;
@@ -184,38 +186,53 @@ try {
             
             // Header row
             $pdf->SetFont('helvetica', 'B', 8);
-            $pdf->Cell($posWidth, $rowHeight, 'Pos', 1, 0, 'C');
-            $pdf->Cell($nameWidth, $rowHeight, 'Name', 1, 0, 'C');
-            $pdf->Cell($contactWidth, $rowHeight, 'Contact', 1, 0, 'C');
-            $pdf->Cell($langWidth, $rowHeight, 'Language', 1, 0, 'C');
-            $pdf->Cell($timeWidth, $rowHeight, 'Time', 1, 0, 'C');
-            $pdf->Cell($commentWidth, $rowHeight, 'Comment', 1, 1, 'C');
+            $pdf->Cell($posWidth, $internalRowHeight, 'Pos', 1, 0, 'C');
+            $pdf->Cell($nameWidth, $internalRowHeight, 'Name', 1, 0, 'C');
+            $pdf->Cell($contactWidth, $internalRowHeight, 'Contact', 1, 0, 'C');
+            $pdf->Cell($langWidth, $internalRowHeight, 'Language', 1, 0, 'C');
+            $pdf->Cell($timeWidth, $internalRowHeight, 'Time', 1, 0, 'C');
+            $pdf->Cell($commentWidth, $internalRowHeight, 'Comment', 1, 1, 'C');
             
-            $internalCurrentRow = 0;
+            $needNewPage = false;
         }
         
         $user = $waitingList[$i];
         $timeFormatted = date('Y-m-d H:i', $user['time']);
         
+        // Ensure proper UTF-8 encoding for all text fields
+        $name = html_entity_decode($user['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $contact = html_entity_decode($user['email_or_phone'] ?: '-', ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $language = html_entity_decode($user['language'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $comment = html_entity_decode($user['comment'] ?: '-', ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        
         // Use smaller font for data
         $pdf->SetFont('helvetica', '', 7);
         
         // Calculate cell heights for multi-line content
-        $nameHeight = $pdf->getStringHeight($nameWidth, $user['name']);
-        $contactHeight = $pdf->getStringHeight($contactWidth, $user['email_or_phone'] ?: '-');
-        $commentHeight = $pdf->getStringHeight($commentWidth, $user['comment'] ?: '-');
+        $nameHeight = $pdf->getStringHeight($nameWidth, $name);
+        $contactHeight = $pdf->getStringHeight($contactWidth, $contact);
+        $commentHeight = $pdf->getStringHeight($commentWidth, $comment);
         
-        $cellHeight = max($rowHeight, $nameHeight, $contactHeight, $commentHeight);
+        $cellHeight = max($internalRowHeight, $nameHeight, $contactHeight, $commentHeight);
+        
+        // Check if this row would overflow the page (with some margin for safety)
+        $currentY = $pdf->GetY();
+        $pageHeight = 297 - $footerSpace - 5; // Extra 5mm safety margin
+        
+        // If row would overflow, start new page
+        if ($currentY + $cellHeight > $pageHeight) {
+            $needNewPage = true;
+            $i--; // Re-process this item on the new page
+            continue;
+        }
         
         // Draw cells
         $pdf->MultiCell($posWidth, $cellHeight, $user['position'], 1, 'C', false, 0, '', '', true, 0, false, true, $cellHeight, 'M');
-        $pdf->MultiCell($nameWidth, $cellHeight, $user['name'], 1, 'L', false, 0, '', '', true, 0, false, true, $cellHeight, 'M');
-        $pdf->MultiCell($contactWidth, $cellHeight, $user['email_or_phone'] ?: '-', 1, 'L', false, 0, '', '', true, 0, false, true, $cellHeight, 'M');
-        $pdf->MultiCell($langWidth, $cellHeight, $user['language'], 1, 'C', false, 0, '', '', true, 0, false, true, $cellHeight, 'M');
+        $pdf->MultiCell($nameWidth, $cellHeight, $name, 1, 'L', false, 0, '', '', true, 0, false, true, $cellHeight, 'M');
+        $pdf->MultiCell($contactWidth, $cellHeight, $contact, 1, 'L', false, 0, '', '', true, 0, false, true, $cellHeight, 'M');
+        $pdf->MultiCell($langWidth, $cellHeight, $language, 1, 'C', false, 0, '', '', true, 0, false, true, $cellHeight, 'M');
         $pdf->MultiCell($timeWidth, $cellHeight, $timeFormatted, 1, 'C', false, 0, '', '', true, 0, false, true, $cellHeight, 'M');
-        $pdf->MultiCell($commentWidth, $cellHeight, $user['comment'] ?: '-', 1, 'L', false, 1, '', '', true, 0, false, true, $cellHeight, 'M');
-        
-        $internalCurrentRow++;
+        $pdf->MultiCell($commentWidth, $cellHeight, $comment, 1, 'L', false, 1, '', '', true, 0, false, true, $cellHeight, 'M');
     }
 
     $pdf->Output('saga_waiting_list_' . date('Y-m-d') . '.pdf', 'I');
