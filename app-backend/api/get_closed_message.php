@@ -19,20 +19,26 @@ try {
     $row = $result->fetchArray(SQLITE3_ASSOC);
     $closed_message = $row ? $row['value'] : 'The waiting list is currently closed.';
 
-    // Calculate the next appointment date (nearest Wednesday or Friday)
-    $signupDate = new DateTime();
-    $dayOfWeek = $signupDate->format('w'); // 0 (Sunday) to 6 (Saturday)
+    // Replace the placeholder {{next_appointment}} dynamically
+    if (strpos($closed_message, '{{next_appointment}}') !== false) {
+        $signupDate = new DateTime();
+        $dayOfWeek = $signupDate->format('w'); // 0 (Sunday) to 6 (Saturday)
 
-    if ($dayOfWeek <= 3) { // Sunday, Monday, Tuesday, or Wednesday
-        $signupDate->modify('next Wednesday');
-    } else { // Thursday, Friday, or Saturday
-        $signupDate->modify('next Friday');
+        if ($dayOfWeek == 0 || $dayOfWeek < 3) { // Sunday, Monday, or Tuesday
+            $signupDate->modify('next Wednesday');
+        } elseif ($dayOfWeek == 3) { // Today is Wednesday
+            // Keep today's date
+        } elseif ($dayOfWeek == 4) { // Thursday
+            $signupDate->modify('next Friday');
+        } elseif ($dayOfWeek == 5) { // Today is Friday
+            // Keep today's date
+        } else { // Saturday
+            $signupDate->modify('next Wednesday');
+        }
+
+        $formattedDate = $signupDate->format('l, F j, Y'); // Example: "Wednesday, March 15, 2023"
+        $closed_message = str_replace('{{next_appointment}}', $formattedDate, $closed_message);
     }
-
-    $formattedDate = $signupDate->format('l, F j, Y'); // Example: "Wednesday, March 15, 2023"
-
-    // Replace the placeholder {{next_appointment}} in the closed message
-    $closed_message = str_replace('{{next_appointment}}', $formattedDate, $closed_message);
 
     // Return the closed message as JSON
     echo json_encode([

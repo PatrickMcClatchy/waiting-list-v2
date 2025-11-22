@@ -31,10 +31,16 @@ try {
         $signupDate = new DateTime();
         $dayOfWeek = $signupDate->format('w'); // 0 (Sunday) to 6 (Saturday)
 
-        if ($dayOfWeek <= 3) { // Sunday, Monday, Tuesday, or Wednesday
+        if ($dayOfWeek == 0 || $dayOfWeek < 3) { // Sunday, Monday, or Tuesday
             $signupDate->modify('next Wednesday');
-        } else { // Thursday, Friday, or Saturday
+        } elseif ($dayOfWeek == 3) { // Today is Wednesday
+            // Keep today's date
+        } elseif ($dayOfWeek == 4) { // Thursday
             $signupDate->modify('next Friday');
+        } elseif ($dayOfWeek == 5) { // Today is Friday
+            // Keep today's date
+        } else { // Saturday
+            $signupDate->modify('next Wednesday');
         }
 
         $formattedDate = $signupDate->format('l, F j, Y'); // Example: "Wednesday, March 15, 2023"

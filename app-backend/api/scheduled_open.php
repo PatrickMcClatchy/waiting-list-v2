@@ -44,10 +44,12 @@ try {
    $stmt = $db->prepare("SELECT value FROM settings WHERE key = 'manual_close_date'");
    $result = $stmt->execute();
    $row = $result->fetchArray(SQLITE3_ASSOC);
-   $manualCloseDate = $row ? $row['value'] : '';
+   $manualCloseDate = $row ? $row['value'] : null;
 
-   if ($manualCloseDate === $currentDateTime->format('Y-m-d')) {
-       echo json_encode(['success' => false, 'message' => 'The waiting list was manually closed today.']);
+   $currentDate = (new DateTime())->format('Y-m-d');
+
+   if ($manualCloseDate === $currentDate) {
+       echo json_encode(['success' => false, 'message' => 'The list was manually closed today. Automatic opening skipped.']);
        exit;
    }
 
@@ -104,6 +106,8 @@ try {
        $db->exec('BEGIN TRANSACTION');
        
        try {
+           // Commented out the backup and clearing logic
+           /*
            // Create a backup of the waiting list before clearing it
            $config = include(__DIR__ . '/config.php');
            $dbPath = $config['db_path'];
@@ -147,7 +151,8 @@ try {
            
            // Clear the waiting list
            $db->exec('DELETE FROM waiting_list');
-           
+           */
+
            // Open the waiting list
            $stmt = $db->prepare("UPDATE settings SET value = '1' WHERE key = 'waiting_list_open'");
            if (!$stmt->execute()) {
@@ -159,8 +164,7 @@ try {
            
            echo json_encode([
                'success' => true, 
-               'message' => 'The waiting list is now open and has been cleared.',
-               'backup_file' => basename($backupFile)
+               'message' => 'The waiting list is now open.'
            ]);
        } catch (Exception $e) {
            // Rollback transaction on error
