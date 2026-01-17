@@ -65,14 +65,24 @@ try {
        $row = $result->fetchArray(SQLITE3_ASSOC);
        $position = $row['max_position'] + 1;
 
-       // Calculate the nearest Wednesday or Friday
-       $signupDate = new DateTime();
-       $dayOfWeek = $signupDate->format('w'); // 0 (Sunday) to 6 (Saturday)
+       // Calculate the nearest Wednesday or Friday with explicit timezone
+       $signupDate = new DateTime('now', new DateTimeZone('Europe/Berlin'));
+       $dayOfWeek = (int)$signupDate->format('w'); 
+       // 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday
 
-       if ($dayOfWeek <= 3) { // If today is Sunday, Monday, Tuesday, or Wednesday
-           $signupDate->modify('next Wednesday');
-       } else { // If today is Thursday, Friday, or Saturday
-           $signupDate->modify('next Friday');
+       // Appointment days are Wednesday (3) and Friday (5)
+       if ($dayOfWeek === 3 || $dayOfWeek === 5) {
+           // If today is Wednesday or Friday, show today
+           // (keep current date)
+       } elseif ($dayOfWeek === 0 || $dayOfWeek === 1 || $dayOfWeek === 2) {
+           // Sunday, Monday, Tuesday -> next Wednesday
+           $signupDate->modify('wednesday');
+       } elseif ($dayOfWeek === 4) {
+           // Thursday -> next Friday (tomorrow)
+           $signupDate->modify('friday');
+       } else {
+           // Saturday (6) -> next Wednesday
+           $signupDate->modify('wednesday');
        }
 
        $formattedDate = $signupDate->format('l, F j, Y'); // Example: "Wednesday, March 15, 2023"

@@ -28,19 +28,24 @@ try {
 
     // Replace the placeholder {{next_appointment}} dynamically
     if (strpos($open_message, '{{next_appointment}}') !== false) {
-        $signupDate = new DateTime();
-        $dayOfWeek = $signupDate->format('w'); // 0 (Sunday) to 6 (Saturday)
+        // Calculate with explicit timezone
+        $signupDate = new DateTime('now', new DateTimeZone('Europe/Berlin'));
+        $dayOfWeek = (int)$signupDate->format('w'); 
+        // 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday
 
-        if ($dayOfWeek == 0 || $dayOfWeek < 3) { // Sunday, Monday, or Tuesday
-            $signupDate->modify('next Wednesday');
-        } elseif ($dayOfWeek == 3) { // Today is Wednesday
-            // Keep today's date
-        } elseif ($dayOfWeek == 4) { // Thursday
-            $signupDate->modify('next Friday');
-        } elseif ($dayOfWeek == 5) { // Today is Friday
-            // Keep today's date
-        } else { // Saturday
-            $signupDate->modify('next Wednesday');
+        // Appointment days are Wednesday (3) and Friday (5)
+        if ($dayOfWeek === 3 || $dayOfWeek === 5) {
+            // If today is Wednesday or Friday, show today
+            // (keep current date)
+        } elseif ($dayOfWeek === 0 || $dayOfWeek === 1 || $dayOfWeek === 2) {
+            // Sunday, Monday, Tuesday -> next Wednesday
+            $signupDate->modify('wednesday');
+        } elseif ($dayOfWeek === 4) {
+            // Thursday -> next Friday (tomorrow)
+            $signupDate->modify('friday');
+        } else {
+            // Saturday (6) -> next Wednesday
+            $signupDate->modify('wednesday');
         }
 
         $formattedDate = $signupDate->format('l, F j, Y'); // Example: "Wednesday, March 15, 2023"
